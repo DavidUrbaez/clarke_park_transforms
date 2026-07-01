@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clarke &amp; Park Transforms as Geometry — the abc → αβ0 → dq0 picture</title>
+  <style>
+    :root {
+      --bg0: #070b14;
+      --bg1: #0d1426;
+      --panel: rgba(14, 20, 38, .82);
+      --panel-b: #243154;
+      --ink: #dce6ff;
+      --ink-dim: #8fa3cc;
+      --accent: #5aa0ff;
+      --warn: #ffd166;
+      --hot: #ff7528;
+      --cold: #40c7ff;
+      --qgreen: #7ef0c0;
+      --zero: #c792ea;
+      --font: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(120% 120% at 70% 10%, var(--bg1), var(--bg0));
+      color: var(--ink);
+      font-family: var(--font);
+    }
+
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    .panel {
+      position: fixed;
+      background: var(--panel);
+      border: 1px solid var(--panel-b);
+      border-radius: 12px;
+      backdrop-filter: blur(7px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+    }
+
+    /* HUD */
+    #hud {
+      top: 14px;
+      left: 14px;
+      padding: 13px 15px;
+      max-width: 350px;
+    }
+
+    #hud h1 { font-size: 14px; margin: 0 0 4px; font-weight: 650; }
+
+    #hud .cap {
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      line-height: 1.45;
+      margin: 6px 0 9px;
+    }
+
+    #hud .cap b { color: var(--ink); font-weight: 600; }
+
+    #hud ul {
+      margin: 6px 0 8px;
+      padding-left: 17px;
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      line-height: 1.5;
+    }
+
+    #hud table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 11.5px;
+    }
+
+    #hud td { padding: 1.5px 4px; }
+    #hud td.k { color: var(--ink-dim); }
+    #hud td.v { text-align: right; color: #bcd2ff; min-width: 52px; }
+
+    .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: baseline; }
+
+    /* waveform strip */
+    #scope {
+      bottom: 14px;
+      right: 14px;
+      padding: 9px 12px 7px;
+    }
+
+    #scope .ti { font-size: 11px; color: var(--ink); margin-bottom: 4px; }
+    #scope .ti span { color: var(--ink-dim); }
+    #scope canvas { border-radius: 6px; }
+
+    /* transport */
+    #transport {
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 14px;
+    }
+
+    #transport button {
+      border: 1px solid var(--panel-b);
+      color: var(--ink);
+      background: #16203a;
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+
+    #transport button:hover { border-color: var(--accent); color: #fff; }
+    #transport button.on { border-color: var(--accent); background: #1d2d55; color: #fff; }
+
+    #transport .rd {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      min-width: 86px;
+      text-align: right;
+    }
+
+    /* lil-gui: keep it in-theme, top right */
+    .lil-gui.root { --background-color: rgba(14, 20, 38, .88); --widget-color: #16203a; --title-background-color: #101a33; }
+
+    @media (max-width: 900px) {
+      #hud { max-width: 270px; }
+      #hud ul { display: none; }
+      #scope { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <div id="hud" class="panel">
+    <h1>Clarke &amp; Park, as geometry</h1>
+    <div class="cap">
+      The white ball is the instantaneous point <b>(i<sub>a</sub>, i<sub>b</sub>, i<sub>c</sub>)</b> plotted in 3-D
+      <b>abc-space</b>. Balanced three-phase signals never leave the tilted disc — the plane
+      <b>a+b+c=0</b>. Clarke just renames axes: <b>α, β</b> span that plane, <b>0</b> is the axis
+      perpendicular to it. Park rotates with the vector so it stands still.
+    </div>
+    <ul>
+      <li><b>▶ look down 0-axis</b>: the a, b, c axes land 120° apart — the classic space-vector diagram.</li>
+      <li>Toggle <b>Park (dq) frame</b>: the vector freezes, the abc axes spin backwards.</li>
+      <li>Add <b>negative seq</b>: circle → ellipse, and d, q wobble at 2ω.</li>
+      <li>Add <b>zero seq</b>: the ball finally leaves the plane, sliding along the purple 0-axis.</li>
+      <li>Add <b>5th harmonic</b>: a lobed orbit, a 6ω ripple in dq.</li>
+    </ul>
+    <table>
+      <tr>
+        <td class="k"><span class="sw" style="background:var(--warn)"></span>i_a</td><td class="v" id="ra">–</td>
+        <td class="k"><span class="sw" style="background:var(--cold)"></span>i_b</td><td class="v" id="rb">–</td>
+        <td class="k"><span class="sw" style="background:var(--hot)"></span>i_c</td><td class="v" id="rc">–</td>
+      </tr>
+      <tr>
+        <td class="k">α</td><td class="v" id="ral">–</td>
+        <td class="k">β</td><td class="v" id="rbe">–</td>
+        <td class="k"><span class="sw" style="background:var(--zero)"></span>0</td><td class="v" id="rze">–</td>
+      </tr>
+      <tr>
+        <td class="k"><span class="sw" style="background:var(--accent)"></span>d</td><td class="v" id="rd">–</td>
+        <td class="k"><span class="sw" style="background:var(--qgreen)"></span>q</td><td class="v" id="rq">–</td>
+        <td class="k">|s&#8407;|</td><td class="v" id="rm">–</td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="scope" class="panel">
+    <div class="ti">waveforms — <span>abc solid, d&amp;q dashed</span></div>
+    <canvas id="scopeCv" width="340" height="104"></canvas>
+  </div>
+
+  <div id="transport" class="panel">
+    <button id="btnPlay">⏸ pause</button>
+    <button id="btnPark">Park (dq) frame</button>
+    <div class="rd" id="rdTheta">θ = 0°</div>
+  </div>
+
+  <script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.184.0/examples/jsm/"
+} }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+    // ---------------------------------------------------------------- basis
+    // World axes ARE the abc axes: x=a, y=b, z=c. Everything else is derived.
+    const U0 = new THREE.Vector3(1, 1, 1).normalize();   // zero-sequence axis
+    const UA = new THREE.Vector3(2, -1, -1).normalize(); // Clarke α direction, in the plane
+    const UB = new THREE.Vector3(0, 1, -1).normalize();  // Clarke β direction, in the plane
+
+    const COL = {
+      a: 0xffd166, b: 0x40c7ff, c: 0xff7528,
+      alpha: 0xdce6ff, beta: 0x8fa3cc, zero: 0xc792ea,
+      d: 0x5aa0ff, q: 0x7ef0c0, vec: 0xffffff, plane: 0x2b3450
+    };
+
+    // ---------------------------------------------------------------- params
+    const params = {
+      A1: 1.0,        // positive-sequence amplitude
+      A2: 0.0,        // negative-sequence amplitude (unbalance)
+      A0: 0.0,        // zero-sequence amplitude
+      A5: 0.0,        // 5th harmonic amplitude (naturally negative-sequence)
+      speed: 0.22,    // electrical cycles per second (visual)
+      park: false,    // rotate the world with the dq frame
+      showPlane: true,
+      showTrail: true,
+      showDQ: true,
+      showDrop: true,
+      paused: false,
+    };
+
+    // ---------------------------------------------------------------- signals
+    const K = 2 * Math.PI / 3;
+
+    // phase j = 0,1,2  →  a,b,c
+    function phaseVal(j, th) {
+      return params.A1 * Math.cos(th - j * K)
+        + params.A2 * Math.cos(th + j * K)
+        + params.A0 * Math.cos(th)
+        + params.A5 * Math.cos(5 * (th - j * K));
+    }
+
+    // amplitude-invariant Clarke + Park
+    function transforms(a, b, c, th) {
+      const al = (2 * a - b - c) / 3;
+      const be = (b - c) / Math.sqrt(3);
+      const ze = (a + b + c) / 3;
+      const d = al * Math.cos(th) + be * Math.sin(th);
+      const q = -al * Math.sin(th) + be * Math.cos(th);
+      return { al, be, ze, d, q };
+    }
+
+    // ---------------------------------------------------------------- scene
+    const app = document.getElementById('app');
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    app.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.01, 100);
+    camera.position.set(4.1, -0.5, 2.3);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+
+    // world group — rotated by −θ about U0 in Park view, so the dq frame appears frozen
+    const world = new THREE.Group();
+    scene.add(world);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+
+    // ------------------------------------------------- helpers: labels, axes
+    function makeLabel(text, colorCss, scale = 0.30) {
+      const cv = document.createElement('canvas');
+      cv.width = 160; cv.height = 80;
+      const g = cv.getContext('2d');
+      g.font = '600 52px ui-monospace, Consolas, monospace';
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 10;
+      g.fillStyle = colorCss;
+      g.fillText(text, 80, 42);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+      sp.scale.set(scale * 2, scale, 1);
+      return sp;
+    }
+
+    function axisLine(dir, len, color, opNeg = 0.35) {
+      const grp = new THREE.Group();
+      const mk = (s0, s1, op) => {
+        const geo = new THREE.BufferGeometry().setFromPoints(
+          [dir.clone().multiplyScalar(s0), dir.clone().multiplyScalar(s1)]);
+        const ln = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: op }));
+        grp.add(ln);
+      };
+      mk(0, len, 0.95);
+      mk(-len, 0, opNeg);
+      const cone = new THREE.Mesh(
+        new THREE.ConeGeometry(0.030, 0.10, 14),
+        new THREE.MeshBasicMaterial({ color }));
+      cone.position.copy(dir.clone().multiplyScalar(len));
+      cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      grp.add(cone);
+      return grp;
+    }
+
+    const AXL = 2.0;
+
+    // abc axes (the world axes themselves)
+    const axA = new THREE.Vector3(1, 0, 0), axB = new THREE.Vector3(0, 1, 0), axC = new THREE.Vector3(0, 0, 1);
+    world.add(axisLine(axA, AXL, COL.a));
+    world.add(axisLine(axB, AXL, COL.b));
+    world.add(axisLine(axC, AXL, COL.c));
+    const labA = makeLabel('a', '#ffd166'); labA.position.copy(axA).multiplyScalar(AXL + 0.16); world.add(labA);
+    const labB = makeLabel('b', '#40c7ff'); labB.position.copy(axB).multiplyScalar(AXL + 0.16); world.add(labB);
+    const labC = makeLabel('c', '#ff7528'); labC.position.copy(axC).multiplyScalar(AXL + 0.16); world.add(labC);
+
+    // zero-sequence axis
+    world.add(axisLine(U0, AXL * 0.85, COL.zero, 0.5));
+    const lab0 = makeLabel('0', '#c792ea'); lab0.position.copy(U0).multiplyScalar(AXL * 0.85 + 0.15); world.add(lab0);
+
+    // α, β axes in the plane
+    const planeGrp = new THREE.Group(); world.add(planeGrp);
+    planeGrp.add(axisLine(UA, AXL * 0.85, COL.alpha, 0.25));
+    planeGrp.add(axisLine(UB, AXL * 0.85, COL.beta, 0.25));
+    const labAl = makeLabel('α', '#dce6ff'); labAl.position.copy(UA).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labAl);
+    const labBe = makeLabel('β', '#8fa3cc'); labBe.position.copy(UB).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labBe);
+
+    // the αβ plane: translucent disc + polar grid, normal = U0
+    const PR = 1.75;
+    const disc = new THREE.Mesh(
+      new THREE.CircleGeometry(PR, 72),
+      new THREE.MeshBasicMaterial({ color: COL.plane, transparent: true, opacity: 0.20, side: THREE.DoubleSide, depthWrite: false }));
+    disc.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), U0);
+    planeGrp.add(disc);
+
+    const pol = new THREE.PolarGridHelper(PR, 12, 4, 48, 0x36446e, 0x233054);
+    pol.material.transparent = true; pol.material.opacity = 0.5; pol.material.depthWrite = false;
+    pol.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), U0);
+    planeGrp.add(pol);
+
+    // ------------------------------------------------- dynamic actors
+    // space vector arrow + ball
+    const vecArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 1, COL.vec, 0.09, 0.045);
+    world.add(vecArrow);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.045, 20, 14),
+      new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    world.add(ball);
+
+    // αβ projection: dot on the plane + dashed drop line (the zero-seq component)
+    const dropGrp = new THREE.Group(); world.add(dropGrp);
+    const projDot = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 10),
+      new THREE.MeshBasicMaterial({ color: 0x9db6e8 }));
+    dropGrp.add(projDot);
+    const dropGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+    const dropLine = new THREE.Line(dropGeo,
+      new THREE.LineDashedMaterial({ color: COL.zero, dashSize: 0.055, gapSize: 0.04, transparent: true, opacity: 0.9 }));
+    dropGrp.add(dropLine);
+    const projGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+    const projLine = new THREE.Line(projGeo,
+      new THREE.LineBasicMaterial({ color: 0x9db6e8, transparent: true, opacity: 0.55 }));
+    dropGrp.add(projLine);
+
+    // dq frame: two arrows rotating in the plane
+    const dqGrp = new THREE.Group(); world.add(dqGrp);
+    const dArrow = new THREE.ArrowHelper(UA, new THREE.Vector3(), 1.05, COL.d, 0.08, 0.04);
+    const qArrow = new THREE.ArrowHelper(UB, new THREE.Vector3(), 1.05, COL.q, 0.08, 0.04);
+    dqGrp.add(dArrow, qArrow);
+    const labD = makeLabel('d', '#5aa0ff', 0.24); dqGrp.add(labD);
+    const labQ = makeLabel('q', '#7ef0c0', 0.24); dqGrp.add(labQ);
+
+    // trail: ring of recent ball positions, fading to background
+    const TRAIL_N = 440;
+    const trailPts = [];
+    const trailPos = new Float32Array(TRAIL_N * 3);
+    const trailCol = new Float32Array(TRAIL_N * 3);
+    const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+    trailGeo.setAttribute('color', new THREE.BufferAttribute(trailCol, 3));
+    trailGeo.setDrawRange(0, 0);
+    const trail = new THREE.Line(trailGeo,
+      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 }));
+    trail.frustumCulled = false;
+    world.add(trail);
+    const cHead = new THREE.Color(0xffe9a8), cTail = new THREE.Color(0x0d1426), cTmp = new THREE.Color();
+
+    // ------------------------------------------------- scope strip
+    const scopeCv = document.getElementById('scopeCv');
+    const sg = scopeCv.getContext('2d');
+    const SW = scopeCv.width, SH = scopeCv.height;
+    const hist = { a: [], b: [], c: [], d: [], q: [] };
+
+    function pushHist(a, b, c, d, q) {
+      hist.a.push(a); hist.b.push(b); hist.c.push(c); hist.d.push(d); hist.q.push(q);
+      for (const k in hist) if (hist[k].length > SW) hist[k].shift();
+    }
+
+    function drawScope() {
+      sg.clearRect(0, 0, SW, SH);
+      sg.fillStyle = 'rgba(7,11,20,.55)'; sg.fillRect(0, 0, SW, SH);
+      const yMax = 2.3, y0 = SH / 2;
+      sg.strokeStyle = '#233054'; sg.lineWidth = 1;
+      sg.beginPath(); sg.moveTo(0, y0); sg.lineTo(SW, y0); sg.stroke();
+      const tr = (arr, css, dash) => {
+        if (arr.length < 2) return;
+        sg.strokeStyle = css; sg.lineWidth = 1.4;
+        sg.setLineDash(dash ? [4, 3] : []);
+        sg.beginPath();
+        const off = SW - arr.length;
+        for (let i = 0; i < arr.length; i++) {
+          const y = y0 - (arr[i] / yMax) * (SH / 2 - 4);
+          i ? sg.lineTo(off + i, y) : sg.moveTo(off + i, y);
+        }
+        sg.stroke();
+      };
+      tr(hist.a, '#ffd166'); tr(hist.b, '#40c7ff'); tr(hist.c, '#ff7528');
+      tr(hist.d, '#5aa0ff', true); tr(hist.q, '#7ef0c0', true);
+      sg.setLineDash([]);
+    }
+
+    // ------------------------------------------------- HUD readouts
+    const R = id => document.getElementById(id);
+    const rEls = { a: R('ra'), b: R('rb'), c: R('rc'), al: R('ral'), be: R('rbe'), ze: R('rze'), d: R('rd'), q: R('rq'), m: R('rm') };
+    const rdTheta = R('rdTheta');
+    const f2 = x => (x >= 0 ? '+' : '') + x.toFixed(2);
+
+    // ------------------------------------------------- camera presets
+    function camPreset(which) {
+      if (which === 'zero') {
+        camera.position.copy(U0).multiplyScalar(4.6);
+        camera.up.copy(UB);
+      } else {
+        camera.position.set(4.1, -0.5, 2.3);
+        camera.up.set(0, 1, 0);
+      }
+      controls.target.set(0, 0, 0);
+      controls.update();
+    }
+
+    // ------------------------------------------------- GUI
+    const gui = new GUI({ title: 'Clarke / Park — controls' });
+    const fs = gui.addFolder('Signal content');
+    fs.add(params, 'A1', 0, 1.2, 0.01).name('positive seq A₁');
+    fs.add(params, 'A2', 0, 1.0, 0.01).name('negative seq A₂ (unbalance)');
+    fs.add(params, 'A0', 0, 1.0, 0.01).name('zero seq A₀');
+    fs.add(params, 'A5', 0, 0.6, 0.01).name('5th harmonic A₅');
+    fs.add(params, 'speed', 0.03, 1.0, 0.01).name('speed (cycles/s)');
+
+    const fv = gui.addFolder('Frames & views');
+    const parkCtrl = fv.add(params, 'park').name('Park (dq) frame view').onChange(syncParkBtn);
+    fv.add({ p: () => camPreset('zero') }, 'p').name('▶ look down 0-axis');
+    fv.add({ p: () => camPreset('hero') }, 'p').name('▶ hero view');
+
+    const fd = gui.addFolder('Display');
+    fd.add(params, 'showPlane').name('αβ plane');
+    fd.add(params, 'showTrail').name('trail');
+    fd.add(params, 'showDQ').name('dq axes');
+    fd.add(params, 'showDrop').name('projection & drop line');
+    fd.close();
+
+    // ------------------------------------------------- transport
+    const btnPlay = document.getElementById('btnPlay');
+    const btnPark = document.getElementById('btnPark');
+    btnPlay.onclick = () => {
+      params.paused = !params.paused;
+      btnPlay.textContent = params.paused ? '▶ play' : '⏸ pause';
+    };
+    function syncParkBtn() { btnPark.classList.toggle('on', params.park); }
+    btnPark.onclick = () => { params.park = !params.park; parkCtrl.updateDisplay(); syncParkBtn(); };
+
+    // ------------------------------------------------- main loop
+    let th = 0;
+    const clock = new THREE.Clock();
+    const P = new THREE.Vector3(), Pproj = new THREE.Vector3(), tmp = new THREE.Vector3();
+
+    function tick() {
+      requestAnimationFrame(tick);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      if (!params.paused) th += 2 * Math.PI * params.speed * dt;
+
+      // signal sample
+      const a = phaseVal(0, th), b = phaseVal(1, th), c = phaseVal(2, th);
+      const { al, be, ze, d, q } = transforms(a, b, c, th);
+
+      // geometry: the point in abc space and its plane projection
+      P.set(a, b, c);
+      Pproj.copy(P).addScaledVector(U0, -P.dot(U0));
+
+      const len = Math.max(P.length(), 1e-4);
+      vecArrow.setDirection(tmp.copy(P).normalize());
+      vecArrow.setLength(len, Math.min(0.09, len * 0.5), 0.045);
+      ball.position.copy(P);
+
+      // projection + drop line
+      dropGrp.visible = params.showDrop;
+      if (params.showDrop) {
+        projDot.position.copy(Pproj);
+        const dp = dropLine.geometry.attributes.position;
+        dp.setXYZ(0, P.x, P.y, P.z); dp.setXYZ(1, Pproj.x, Pproj.y, Pproj.z); dp.needsUpdate = true;
+        dropLine.computeLineDistances();
+        const pp = projLine.geometry.attributes.position;
+        pp.setXYZ(0, 0, 0, 0); pp.setXYZ(1, Pproj.x, Pproj.y, Pproj.z); pp.needsUpdate = true;
+      }
+
+      // dq frame axes rotate at +θ in the plane
+      dqGrp.visible = params.showDQ;
+      if (params.showDQ) {
+        const dDir = tmp.copy(UA).multiplyScalar(Math.cos(th)).addScaledVector(UB, Math.sin(th)).normalize();
+        dArrow.setDirection(dDir);
+        labD.position.copy(dDir).multiplyScalar(1.18);
+        const qDir = tmp.copy(UA).multiplyScalar(-Math.sin(th)).addScaledVector(UB, Math.cos(th)).normalize();
+        qArrow.setDirection(qDir);
+        labQ.position.copy(qDir).multiplyScalar(1.18);
+      }
+
+      planeGrp.visible = params.showPlane;
+
+      // trail
+      trail.visible = params.showTrail;
+      if (!params.paused && params.showTrail) {
+        trailPts.push(P.clone());
+        if (trailPts.length > TRAIL_N) trailPts.shift();
+        const n = trailPts.length;
+        for (let i = 0; i < n; i++) {
+          const p = trailPts[i];
+          trailPos[i * 3] = p.x; trailPos[i * 3 + 1] = p.y; trailPos[i * 3 + 2] = p.z;
+          cTmp.lerpColors(cTail, cHead, n < 2 ? 1 : i / (n - 1));
+          trailCol[i * 3] = cTmp.r; trailCol[i * 3 + 1] = cTmp.g; trailCol[i * 3 + 2] = cTmp.b;
+        }
+        trailGeo.attributes.position.needsUpdate = true;
+        trailGeo.attributes.color.needsUpdate = true;
+        trailGeo.setDrawRange(0, n);
+      }
+
+      // Park view: rotate the whole world by −θ about the 0-axis → dq frame appears frozen
+      if (params.park) world.quaternion.setFromAxisAngle(U0, -th);
+      else world.quaternion.identity();
+
+      // readouts + scope
+      rEls.a.textContent = f2(a); rEls.b.textContent = f2(b); rEls.c.textContent = f2(c);
+      rEls.al.textContent = f2(al); rEls.be.textContent = f2(be); rEls.ze.textContent = f2(ze);
+      rEls.d.textContent = f2(d); rEls.q.textContent = f2(q);
+      rEls.m.textContent = Math.hypot(al, be).toFixed(2);
+      rdTheta.textContent = 'θ = ' + (((th * 180 / Math.PI) % 360 + 360) % 360).toFixed(0) + '°';
+
+      if (!params.paused) pushHist(a, b, c, d, q);
+      drawScope();
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    tick();
+
+    // console / test handle
+    window.__cp = { params, gui, camPreset, transforms, phaseVal, get theta() { return th; } };
+  </script>
+</body>
+
+</html>
