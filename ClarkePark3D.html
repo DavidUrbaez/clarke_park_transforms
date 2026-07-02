@@ -730,13 +730,15 @@
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0x070b14, 7.5, 17);
 
-    // phones are narrow → a wider field of view zooms out so the axis labels stay in frame
+    // phones are narrow → a wider field of view zooms out so the axis labels stay in frame,
+    // and the camera sits farther back so the closer preset views aren't cramped
     const PHONE_MQ = '(max-width: 640px), (pointer: coarse) and (max-width: 900px)';
     const fovFor = () => matchMedia(PHONE_MQ).matches ? 60 : 45;
+    const camDist = () => matchMedia(PHONE_MQ).matches ? 1.28 : 1;
     const camera = new THREE.PerspectiveCamera(fovFor(), innerWidth / innerHeight, 0.01, 100);
     // spawn already in tour scene 1's pose (standard î-ĵ-k̂ view) so the opening
     // showTour(0) flight is a no-op — no swing-and-roll on load
-    camera.position.set(4.9, 3.75, 3.2);
+    camera.position.set(4.9, 3.75, 3.2).multiplyScalar(camDist());
     camera.up.set(0, 0, 1);
 
     // TrackballControls: free tumbling — the camera presets (keys 1–4) restore canonical
@@ -1346,7 +1348,7 @@
       const lookDown = which === 'zero';
       if (lookDown) params.autoRotate = false;
       if (autoRotCtrl) { autoRotCtrl.show(!lookDown); autoRotCtrl.updateDisplay(); }
-      flyTo(v.pos, v.up, dur);
+      flyTo(v.pos.clone().multiplyScalar(camDist()), v.up, dur);
     }
     function camPreset(which) { flyPreset(which); }
 
