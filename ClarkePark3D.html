@@ -392,15 +392,23 @@
     }
 
     /* ------------- controls toggle (mobile only) ------------- */
-    #uiToggle {
+    #uiToggle,
+    #sigToggle {
       position: fixed;
       top: 12px;
-      right: 12px;
       z-index: 30;
       display: none;
-      font-size: 18px;
+      font-size: 16px;
       line-height: 1;
       padding: 8px 11px;
+    }
+
+    #uiToggle {
+      right: 12px;
+    }
+
+    #sigToggle {
+      right: 58px;
     }
 
     @media (max-width: 1120px) {
@@ -422,7 +430,8 @@
 
     /* ---- phone layout: start with the controls hidden, reveal with the ⚙ toggle ---- */
     @media (max-width: 640px), (pointer: coarse) and (max-width: 900px) {
-      #uiToggle {
+      #uiToggle,
+      #sigToggle {
         display: block;
       }
 
@@ -434,22 +443,30 @@
         overflow-y: auto;
       }
 
+      /* the HUD (title + "start the guided tour") is hidden on phones to save space —
+         the app opens in the tour anyway, so a page refresh restarts it */
       #hud {
-        top: 10px;
-        left: 10px;
-        right: 58px;
-        max-width: none;
-        padding: 10px 12px;
-      }
-
-      #hud .cap {
         display: none;
       }
 
-      /* hidden by default on phones; the toggle reveals them */
-      body.controls-off .lil-gui.root,
-      body.controls-off #hud table,
-      body.controls-off #ripple {
+      /* the lil-gui control panel is hidden by default; the ⚙ toggle reveals it */
+      body.controls-off .lil-gui.root {
+        display: none;
+      }
+
+      /* time-domain scope: hidden until the 〜 button reveals it; tucked into the
+         (now empty) top-left corner, beside the toggle buttons, to save screen space */
+      body.show-scope #scope {
+        display: block;
+        top: 10px;
+        left: 10px;
+        right: 110px;
+        bottom: auto;
+        padding: 7px 9px 5px;
+      }
+
+      /* drop the long hint text on phones — keep just the "waveforms" label */
+      #scope .ti span + span {
         display: none;
       }
 
@@ -503,7 +520,8 @@
 <body>
   <div id="app"></div>
 
-  <!-- controls toggle (mobile) -->
+  <!-- mobile toggles -->
+  <button id="sigToggle" class="panel" title="show / hide the time-domain signals">〜</button>
   <button id="uiToggle" class="panel" title="show / hide controls">⚙</button>
 
   <!-- ================= HUD ================= -->
@@ -1140,7 +1158,12 @@
     function sizeScope() {
       const dpr = Math.min(devicePixelRatio, 2);
       scopeCv.width = SW * dpr; scopeCv.height = SH * dpr;
-      scopeCv.style.width = SW + 'px'; scopeCv.style.height = SH + 'px';
+      if (matchMedia(PHONE_MQ).matches) {
+        // fill the width of the mobile overlay; height follows the 380×150 aspect
+        scopeCv.style.width = '100%'; scopeCv.style.height = 'auto';
+      } else {
+        scopeCv.style.width = SW + 'px'; scopeCv.style.height = SH + 'px';
+      }
       sg.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     sizeScope();
@@ -1514,6 +1537,10 @@
     if (isPhone) document.body.classList.add('controls-off');
     document.getElementById('uiToggle').addEventListener('click', () => {
       document.body.classList.toggle('controls-off');
+    });
+    document.getElementById('sigToggle').addEventListener('click', () => {
+      const on = document.body.classList.toggle('show-scope');
+      document.getElementById('sigToggle').classList.toggle('on', on);
     });
 
     // ============================================================ scenario chips
