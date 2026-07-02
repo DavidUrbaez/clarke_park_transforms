@@ -5,6 +5,7 @@ Interactive 3-D teaching instrument for the abc → αβ0 → dq0 transforms. Co
 Three.js via CDN import map, OrbitControls, lil-gui, UnrealBloomPass).
 
 **Files**
+
 - `ClarkePark3D.html` — the tool (v2)
 - `ClarkePark3D.v1-mvp.html` — the original MVP, kept for reference (safe to delete)
 
@@ -25,6 +26,7 @@ the orthogonal measurement axes collapsing into the classic 120° space-vector d
 camera sinks onto the 0-axis. Start it from the HUD button.
 
 **Pedagogical devices** (Display folder / keyboard):
+
 - *Tip-to-tail construction* (C) — a·x̂ + b·ŷ + c·ẑ chained arrows landing on the ball
 - *Sequence epicycles* (E) — the exact decomposition into a +ω circle, a −ω circle
   (unbalance → ellipse), −5ω / +7ω harmonic circles, and a zero-sequence leg off the plane;
@@ -38,6 +40,7 @@ camera sinks onto the 0-axis. Start it from the HUD button.
   rotation: watch ‖abc‖ = ‖αβ0‖ lock in the HUD)
 
 **Controls-engineering layer**:
+
 - *Frame angle source*: locked open-loop ω, detuned ω (watch dq slowly precess — why PLLs
   exist), or a live **SRF-PLL** with a bandwidth knob
 - *Grid events*: ⚡ +30° phase jump and ⚡ 3-cycle unbalanced sag, with scope markers; fire a
@@ -85,3 +88,5 @@ Split-screen stationary-vs-rotating observer, machine-stator MMF inset ("the win
 the Clarke transform"), instantaneous p-q power (2ω ripple hitting the DC link), SVM hexagon
 voltage limit, dq spectrum bars (DC/2ω/6ω/12ω), DDSRF/T-half filtering demo, real 50/60 Hz
 time base with slow-motion factor, touch/mobile bottom-sheet layout.
+
+by: David Urbaez
