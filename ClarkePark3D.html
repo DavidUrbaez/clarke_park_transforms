@@ -1535,10 +1535,13 @@
     };
 
     // ============================================================ controls toggle (mobile)
-    // On phones the app opens with the detailed controls hidden for a clean 3D view;
-    // the ⚙ button reveals the lil-gui panel, the HUD readouts and the ripple line.
+    // On phones the app opens with the lil-gui panel hidden for a clean 3D view (the ⚙
+    // button reveals it), but the time-domain waveforms are shown from the start.
     const isPhone = matchMedia(PHONE_MQ).matches;
-    if (isPhone) document.body.classList.add('controls-off');
+    if (isPhone) {
+      document.body.classList.add('controls-off', 'show-scope');
+      document.getElementById('sigToggle').classList.add('on');
+    }
     document.getElementById('uiToggle').addEventListener('click', () => {
       document.body.classList.toggle('controls-off');
     });
