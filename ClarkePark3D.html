@@ -252,7 +252,7 @@
       <b>abc-space</b>. Balanced signals never leave the tilted disc <b>a+b+c=0</b>; Clarke renames its
       axes to <b>α, β</b>; Park rides the rotation so the vector stands still.
     </div>
-    <button id="btnTour">▶ start the guided tour&nbsp;&nbsp;<small>(8 scenes)</small></button>
+    <button id="btnTour">▶ start the guided tour&nbsp;&nbsp;<small>(9 scenes)</small></button>
     <table>
       <tr>
         <td class="k"><span class="sw" style="background:var(--warn)"></span>i_a</td><td class="v" id="ra">–</td>
@@ -330,7 +330,7 @@
 
   <script type="module">
     import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
     import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
     import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
     import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -370,7 +370,7 @@
       convention: 'amp',       // amp | pow  (readouts & matrix only; geometry is invariant)
       // display
       showPlane: true, showTrail: true, showLocus: true, showDQ: true,
-      showDrop: true, showConstruction: false, showEpicycles: false,
+      showDrop: true, showConstruction: false, showEpicycles: false, showCage: true,
       showOrbit: true, showMatrix: false,
       bloom: true, glow: 0.14,
       paused: false,
@@ -431,9 +431,13 @@
     const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.01, 100);
     camera.position.set(4.1, -0.5, 2.3);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
+    // TrackballControls: free tumbling with no pole limits — this scene has no natural
+    // "up" (the meaningful plane is tilted), and the camera presets re-orient the up vector.
+    const controls = new TrackballControls(camera, renderer.domElement);
+    controls.rotateSpeed = 1.5;
+    controls.zoomSpeed = 1.1;
+    controls.panSpeed = 0.6;
+    controls.dynamicDampingFactor = 0.12;
     controls.minDistance = 1.4;
     controls.maxDistance = 12;
 
@@ -598,6 +602,10 @@
     const labAl = makeLabel('α', '#dce6ff'); labAl.position.copy(UA).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labAl);
     const labBe = makeLabel('β', '#8fa3cc'); labBe.position.copy(UB).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labBe);
 
+    // labels whose axis can point straight at the camera fade out there —
+    // otherwise they hover over the origin as clutter (e.g. "0" in the top view)
+    const labelFades = [[labA, axA], [labB, axB], [labC, axC], [lab0, U0], [labAl, UA], [labBe, UB]];
+
     // αβ plane: soft radial disc + polar grid + luminous rim
     const PRAD = 1.75;
     const discTex = (() => {
@@ -621,7 +629,7 @@
     planeGrp.add(disc);
 
     const pol = new THREE.PolarGridHelper(PRAD, 12, 4, 48, 0x36446e, 0x233054);
-    pol.material.transparent = true; pol.material.opacity = 0.45; pol.material.depthWrite = false;
+    pol.material.transparent = true; pol.material.opacity = 0.55; pol.material.depthWrite = false;
     pol.quaternion.setFromUnitVectors(YUP, U0);
     planeGrp.add(pol);
 
@@ -630,6 +638,35 @@
       new THREE.MeshBasicMaterial({ color: 0x36446e, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite: false }));
     rim.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), U0);
     planeGrp.add(rim);
+
+    // reference cage: axis-aligned wireframe box (plot bounds, NOT a "ground") + unit ticks
+    const cageGrp = new THREE.Group(); world.add(cageGrp);
+    {
+      const B = 1.5, segs = [];
+      const v = (x, y, z) => new THREE.Vector3(x, y, z);
+      // 12 box edges
+      for (const s of [-B, B]) for (const t of [-B, B]) {
+        segs.push(v(-B, s, t), v(B, s, t));
+        segs.push(v(s, -B, t), v(s, B, t));
+        segs.push(v(s, t, -B), v(s, t, B));
+      }
+      cageGrp.add(new THREE.LineSegments(
+        new THREE.BufferGeometry().setFromPoints(segs),
+        new THREE.LineBasicMaterial({ color: 0x233054, transparent: true, opacity: 0.5 })));
+
+      // tick crossbars on the three phase axes at ±0.5, ±1
+      const T = 0.035, tickSegs = [[], [], []];
+      const perp = [[v(0, 1, 0), v(0, 0, 1)], [v(1, 0, 0), v(0, 0, 1)], [v(1, 0, 0), v(0, 1, 0)]];
+      const axes = [v(1, 0, 0), v(0, 1, 0), v(0, 0, 1)];
+      for (let k = 0; k < 3; k++) for (const m of [-1, -0.5, 0.5, 1]) {
+        const p = axes[k].clone().multiplyScalar(m);
+        for (const u of perp[k]) tickSegs[k].push(
+          p.clone().addScaledVector(u, -T), p.clone().addScaledVector(u, T));
+      }
+      [COL.a, COL.b, COL.c].forEach((col, k) => cageGrp.add(new THREE.LineSegments(
+        new THREE.BufferGeometry().setFromPoints(tickSegs[k]),
+        new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: 0.45 }))));
+    }
 
     // ambient dust for depth parallax (in scene, not world — Park must not whirl the stars)
     const dust = (() => {
@@ -1032,6 +1069,15 @@
         apply() { tweenParams(RESET); Object.assign(params, { showConstruction: false }); camPreset('edge'); },
       },
       {
+        t: 'Why 120° apart? Watch the shadow',
+        c: 'The a, b, c axes are perpendicular because they are just <b>three separate meter readings</b> — one per phase, nothing physical. Now watch the camera sink onto the 0-axis: three perpendicular axes cast shadows exactly <b>120° apart</b>. The space-vector diagram from machines class is <b>literally this shadow</b> — the stator winding layout performs it in hardware.',
+        apply() {
+          tweenParams(RESET);
+          Object.assign(params, { showConstruction: false, showEpicycles: false, park: false, showCage: true });
+          flyTo(VIEWS.zero.pos, VIEWS.zero.up, 3.6); // slow flight — the collapse IS the lesson
+        },
+      },
+      {
         t: 'Clarke is just a rename',
         c: 'Look straight down the 0-axis: the a, b, c axes land <b>120° apart</b> — the classic space-vector diagram. α and β are simply orthogonal coordinates for the disc. No information moved; the axes got renamed.',
         apply() { tweenParams(RESET); Object.assign(params, { showDrop: true }); camPreset('zero'); },
@@ -1181,6 +1227,7 @@
     fd.add(params, 'showLocus').name('dq-frame locus (green)').listen();
     fd.add(params, 'showTrail').name('abc comet trail');
     fd.add(params, 'showPlane').name('αβ plane');
+    fd.add(params, 'showCage').name('reference cage & ticks');
     fd.add(params, 'showDQ').name('dq axes');
     fd.add(params, 'showDrop').name('projection & drop line').listen();
     fd.add(params, 'showMatrix').name('matrix panel (live algebra)')
@@ -1250,6 +1297,7 @@
     // ============================================================ main loop
     const P = new THREE.Vector3(), Pproj = new THREE.Vector3(), tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3();
     const dDir = new THREE.Vector3(), qDir = new THREE.Vector3();
+    const vView = new THREE.Vector3(), vAxis = new THREE.Vector3();
     let lastNow = performance.now();
     let orbitCheck = 0;
 
@@ -1330,6 +1378,7 @@
       } else errWedge.visible = false;
 
       planeGrp.visible = params.showPlane;
+      cageGrp.visible = params.showCage;
 
       // -------- tip-to-tail construction
       consGrp.visible = params.showConstruction;
@@ -1420,6 +1469,14 @@
       updateMatrix(a, b, c, t);
       drawScope(ths);
 
+      // fade axis labels whose axis points at the camera (world rotation included)
+      vView.copy(camera.position).sub(controls.target).normalize();
+      for (const [sp, dir] of labelFades) {
+        vAxis.copy(dir).applyQuaternion(world.quaternion);
+        const align = Math.abs(vAxis.dot(vView));
+        sp.material.opacity = 1 - THREE.MathUtils.smoothstep(align, 0.90, 0.985);
+      }
+
       // slow dust drift for life
       dust.setRotationFromAxisAngle(U0, now * 0.00002);
 
@@ -1434,6 +1491,7 @@
       composer.setSize(innerWidth, innerHeight);
       bloomPass.setSize(innerWidth, innerHeight);
       for (const m of fatMats) m.resolution.set(innerWidth, innerHeight);
+      controls.handleResize();
       sizeScope();
     });
 

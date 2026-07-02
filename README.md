@@ -19,8 +19,10 @@ Plot the instantaneous point **(i_a, i_b, i_c)** in a 3-D space whose axes are t
 
 ## v2 features
 
-**Guided tour** — 8 scripted scenes ("Three waveforms, one point" → "But who tells you θ?")
-with eased camera flights and parameter morphs. Start it from the HUD button.
+**Guided tour** — 9 scripted scenes ("Three waveforms, one point" → "But who tells you θ?")
+with eased camera flights and parameter morphs, including "Why 120° apart? Watch the shadow" —
+the orthogonal measurement axes collapsing into the classic 120° space-vector diagram as the
+camera sinks onto the 0-axis. Start it from the HUD button.
 
 **Pedagogical devices** (Display folder / keyboard):
 - *Tip-to-tail construction* (C) — a·x̂ + b·ŷ + c·ẑ chained arrows landing on the ball
