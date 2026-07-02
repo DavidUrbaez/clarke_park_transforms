@@ -429,7 +429,9 @@
     }
 
     /* ---- phone layout: start with the controls hidden, reveal with the ⚙ toggle ---- */
-    @media (max-width: 640px), (pointer: coarse) and (max-width: 900px) {
+    @media (max-width: 640px),
+    (pointer: coarse) and (max-width: 900px) {
+
       #uiToggle,
       #sigToggle {
         display: block;
@@ -466,7 +468,7 @@
       }
 
       /* drop the long hint text on phones — keep just the "waveforms" label */
-      #scope .ti span + span {
+      #scope .ti span+span {
         display: none;
       }
 
