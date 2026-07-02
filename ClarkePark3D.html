@@ -45,6 +45,7 @@
 
     canvas {
       display: block;
+      touch-action: none;
     }
 
     .panel {
@@ -265,7 +266,7 @@
 
     /* ------------- scenario chips ------------- */
     #chips {
-      bottom: 64px;
+      bottom: 76px;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -281,19 +282,41 @@
 
     /* ------------- guided tour ------------- */
     #tour {
-      bottom: 64px;
+      bottom: 76px;
       left: 50%;
       transform: translateX(-50%);
       width: 560px;
       max-width: calc(100vw - 28px);
       padding: 12px 16px 10px;
       display: none;
+      /* lighter than the other panels so the 3-D scene reads through the description */
+      background: rgba(14, 20, 38, .58);
     }
 
     #tour .tt {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 13px;
       font-weight: 650;
       margin-bottom: 4px;
+    }
+
+    #tourMin {
+      margin-left: auto;
+      padding: 2px 8px;
+      font-size: 13px;
+      line-height: 1;
+      flex: none;
+    }
+
+    #tour.min .tc,
+    #tour.min .nav {
+      display: none;
+    }
+
+    #tour.min {
+      padding-bottom: 12px;
     }
 
     #tour .tt small {
@@ -368,6 +391,18 @@
       --title-background-color: #101a33;
     }
 
+    /* ------------- controls toggle (mobile only) ------------- */
+    #uiToggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 30;
+      display: none;
+      font-size: 18px;
+      line-height: 1;
+      padding: 8px 11px;
+    }
+
     @media (max-width: 1120px) {
       #matrix {
         display: none !important;
@@ -383,9 +418,83 @@
       #chips {
         display: none;
       }
+    }
+
+    /* ---- phone layout: start with the controls hidden, reveal with the ⚙ toggle ---- */
+    @media (max-width: 640px), (pointer: coarse) and (max-width: 900px) {
+      #uiToggle {
+        display: block;
+      }
+
+      /* lil-gui sits below the toggle button and scrolls if tall */
+      .lil-gui.root {
+        top: 52px !important;
+        right: 10px !important;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+      }
+
+      #hud {
+        top: 10px;
+        left: 10px;
+        right: 58px;
+        max-width: none;
+        padding: 10px 12px;
+      }
+
+      #hud .cap {
+        display: none;
+      }
+
+      /* hidden by default on phones; the toggle reveals them */
+      body.controls-off .lil-gui.root,
+      body.controls-off #hud table,
+      body.controls-off #ripple {
+        display: none;
+      }
+
+      #transport {
+        flex-wrap: nowrap;
+        justify-content: center;
+        max-width: calc(100vw - 12px);
+        gap: 6px;
+        padding: 8px 10px;
+        bottom: 10px;
+      }
+
+      #transport button {
+        padding: 6px 9px;
+        font-size: 11.5px;
+        white-space: nowrap;
+        flex: none;
+      }
+
+      /* the ⚡ grid-event buttons stay reachable in the GUI's "Grid events" folder */
+      #transport #btnJump,
+      #transport #btnSag {
+        display: none;
+      }
+
+      /* pause + Park + slider share one row; the slider takes the leftover width */
+      #transport input[type=range] {
+        flex: 1;
+        width: auto;
+        min-width: 40px;
+      }
+
+      #transport .rd {
+        min-width: 0;
+        flex: none;
+      }
 
       #tour {
-        bottom: 66px;
+        bottom: 128px;
+        width: calc(100vw - 20px);
+        padding: 10px 13px 8px;
+      }
+
+      #tour .tc {
+        min-height: 40px;
       }
     }
   </style>
@@ -393,6 +502,9 @@
 
 <body>
   <div id="app"></div>
+
+  <!-- controls toggle (mobile) -->
+  <button id="uiToggle" class="panel" title="show / hide controls">⚙</button>
 
   <!-- ================= HUD ================= -->
   <div id="hud" class="panel">
@@ -468,7 +580,9 @@
 
   <!-- ================= guided tour ================= -->
   <div id="tour" class="panel">
-    <div class="tt"><span id="tourTitle"></span><small id="tourStep"></small></div>
+    <div class="tt"><span id="tourTitle"></span><small id="tourStep"></small>
+      <button id="tourMin" title="minimize / expand the description">▾</button>
+    </div>
     <div class="tc" id="tourCap"></div>
     <div class="nav">
       <button id="tourPrev">◀ back</button>
@@ -613,7 +727,11 @@
     controls.dynamicDampingFactor = 0.12;
     controls.minDistance = 1.4;
     controls.maxDistance = 14;
-    controls.addEventListener('start', () => { camTween = null; }); // user always wins
+    let autoRotCtrl = null; // the "auto-rotate view" GUI checkbox (assigned when the GUI is built)
+    controls.addEventListener('start', () => {
+      camTween = null;                    // user always wins
+      autoRotCtrl?.show();                // dragging away from look-down brings the option back
+    });
 
     // post-processing: MSAA target (composer bypasses canvas AA) + bloom
     const rt = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { samples: 2, type: THREE.HalfFloatType });
@@ -1197,6 +1315,11 @@
     // none of the preset directions sit near the ±k̂ pole, so no singularity handling needed
     function flyPreset(which, dur = 1.1) {
       const v = VIEWS[which] || VIEWS.hero;
+      // looking straight down the 0-axis: an orbit about that same axis would be
+      // invisible (pure roll) — so force auto-rotate off and hide the option entirely
+      const lookDown = which === 'zero';
+      if (lookDown) params.autoRotate = false;
+      if (autoRotCtrl) { autoRotCtrl.show(!lookDown); autoRotCtrl.updateDisplay(); }
       flyTo(v.pos, v.up, dur);
     }
     function camPreset(which) { flyPreset(which); }
@@ -1376,6 +1499,19 @@
     document.getElementById('tourPrev').onclick = () => { if (tourIdx > 0) showTour(tourIdx - 1); };
     document.getElementById('tourNext').onclick = () => tourIdx < TOUR.length - 1 ? showTour(tourIdx + 1) : exitTour();
     document.getElementById('tourExit').onclick = exitTour;
+    document.getElementById('tourMin').onclick = () => {
+      const collapsed = tourEl.panel.classList.toggle('min');
+      document.getElementById('tourMin').textContent = collapsed ? '▸' : '▾';
+    };
+
+    // ============================================================ controls toggle (mobile)
+    // On phones the app opens with the detailed controls hidden for a clean 3D view;
+    // the ⚙ button reveals the lil-gui panel, the HUD readouts and the ripple line.
+    const isPhone = matchMedia('(max-width: 640px), (pointer: coarse) and (max-width: 900px)').matches;
+    if (isPhone) document.body.classList.add('controls-off');
+    document.getElementById('uiToggle').addEventListener('click', () => {
+      document.body.classList.toggle('controls-off');
+    });
 
     // ============================================================ scenario chips
     const chipBtns = [...document.querySelectorAll('#chips button')];
@@ -1492,7 +1628,7 @@
     fv.add({ p: () => camPreset('zero') }, 'p').name('▶ look down 0-axis  (2)');
     fv.add({ p: () => camPreset('edge') }, 'p').name('▶ plane edge-on  (3)');
     fv.add({ p: () => camPreset('ijk') }, 'p').name('▶ standard î-ĵ-k̂  (4)');
-    fv.add(params, 'autoRotate').name('auto-rotate view').listen();
+    autoRotCtrl = fv.add(params, 'autoRotate').name('auto-rotate view').listen();
 
     function guiRefresh() { gui.controllersRecursive().forEach(c => c.updateDisplay()); syncFrameCtrls(); }
 
@@ -1762,6 +1898,17 @@
       composer.render();
     }
 
+    // keep the tour panel just above the transport bar — the transport wraps to a
+    // variable number of rows on narrow screens, so measure it rather than guess
+    const tourPanel = document.getElementById('tour');
+    const transportPanel = document.getElementById('transport');
+    function layoutTour() {
+      const style = getComputedStyle(transportPanel);
+      const gap = parseFloat(style.bottom) + transportPanel.offsetHeight + 12;
+      tourPanel.style.bottom = gap + 'px';
+    }
+    layoutTour();
+
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
@@ -1771,6 +1918,7 @@
       for (const m of fatMats) m.resolution.set(innerWidth, innerHeight);
       controls.handleResize?.(); // TrackballControls only
       sizeScope();
+      layoutTour();
     });
 
     rebuildOrbit();

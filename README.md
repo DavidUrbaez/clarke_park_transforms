@@ -53,8 +53,14 @@ to inspect values and see a ghost ball at that instant on the 3-D orbit.
 
 **Camera**: free tumble (TrackballControls) with four presets — hero, down 0-axis, plane
 edge-on, standard î-ĵ-k̂ (keys 1–4) — plus an *auto-rotate view* checkbox (auto-enabled in
-tour scenes 1, 2 and 8). The app opens inside the guided tour, and the transport bar has a
+tour scenes 1, 2 and 8; auto-disabled when you look straight down the 0-axis, where an orbit
+would be pure roll). The app opens inside the guided tour, and the transport bar has a
 **θ slider** to scrub the whole simulation to any electrical angle (pauses playback).
+
+**Responsive / mobile**: on phones (≤640px or coarse-pointer ≤900px) the app opens with the
+detailed controls hidden for a clean 3-D view; a ⚙ button (top-right) reveals the lil-gui
+panel, HUD readouts and ripple line. One-finger drag rotates, two-finger pinch zooms. The
+transport bar wraps and the tour panel repositions above it automatically.
 
 **Keyboard**: Space play/pause · P Park · E epicycles · C construction · 1/2/3/4 camera views ·
 ←/→ step θ ±2° while paused (or navigate the tour) · Esc exit tour.
