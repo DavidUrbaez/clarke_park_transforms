@@ -539,7 +539,7 @@
       autoRotate: false,       // gentle orbit of the camera around the scene
       // display
       showPlane: true, showTrail: true, showLocus: true, showDQ: true,
-      showDrop: true, showConstruction: false, showEpicycles: false, showCage: true,
+      showDrop: true, showConstruction: false, showConstructionAB: false, showEpicycles: false, showCage: true,
       showZeroAxis: true, showAlphaBeta: true,
       showOrbit: true, showMatrix: false,
       bloom: true, glow: 0.14,
@@ -914,6 +914,13 @@
     const consC = makeArrow(COL.c, 0.010, 0.085, 0.028);
     consGrp.add(consA, consB, consC);
 
+    // tip-to-tail construction in Clarke coordinates: α·α̂ + β·β̂ + 0·0̂ — same ball, new names
+    const consGrpAB = new THREE.Group(); world.add(consGrpAB);
+    const consAl = makeArrow(COL.alpha, 0.010, 0.085, 0.028);
+    const consBe = makeArrow(COL.beta, 0.010, 0.085, 0.028);
+    const consZe = makeArrow(COL.zero, 0.010, 0.085, 0.028);
+    consGrpAB.add(consAl, consBe, consZe);
+
     // sequence epicycles: chained pos / neg / 5th / 7th (in-plane) + zero (off-plane)
     const epiGrp = new THREE.Group(); world.add(epiGrp);
     const epiPos = makeArrow(COL.pos, 0.010, 0.085, 0.028, 1.15);
@@ -1279,8 +1286,8 @@
       },
       {
         t: 'Clarke is just a rename',
-        c: 'Look straight down the 0-axis: the a, b, c axes land <b>120° apart</b> — the classic space-vector diagram. α and β are simply orthogonal coordinates for the disc. No information moved; the axes got renamed.',
-        apply() { tweenParams(RESET); Object.assign(params, { showDrop: true, showConstruction: true }); camPreset('zero'); },
+        c: 'Look straight down the 0-axis: the a, b, c axes land <b>120° apart</b> — the classic space-vector diagram. The tip-to-tail chain now rebuilds the <b>same ball</b> from just <b>α and β</b>: two orthogonal coordinates instead of three redundant ones. No information moved; the axes got renamed.',
+        apply() { tweenParams(RESET); Object.assign(params, { showDrop: true, showConstructionAB: true, showDQ: false }); camPreset('zero'); },
       },
       {
         t: 'Park: ride the carousel',
@@ -1343,7 +1350,7 @@
       // visibility baseline — scenes override only what they hide
       Object.assign(params, {
         showPlane: true, showZeroAxis: true, showAlphaBeta: true, showDQ: true, showDrop: true, showLocus: true,
-        showConstruction: false, showEpicycles: false,
+        showConstruction: false, showConstructionAB: false, showEpicycles: false,
         autoRotate: i === 0 || i === 1 || i === 7, // scenes 1, 2 and 8 slowly orbit
       });
       autoRotAxis = i === 7 ? 'zero' : 'up'; // scene 8: turntable about the 0-axis
@@ -1357,7 +1364,7 @@
       tourEl.panel.style.display = 'none';
       document.getElementById('chips').style.display = 'flex';
       Object.assign(params, {
-        frameSrc: 'ideal', showEpicycles: false, showConstruction: false,
+        frameSrc: 'ideal', showEpicycles: false, showConstruction: false, showConstructionAB: false,
         showPlane: true, showZeroAxis: true, showAlphaBeta: true, showDQ: true, showDrop: true, showLocus: true,
         autoRotate: false,
       });
@@ -1462,7 +1469,8 @@
     fe.add({ c: () => { markers.length = 0; } }, 'c').name('clear markers');
 
     const fd = gui.addFolder('Display');
-    fd.add(params, 'showConstruction').name('tip-to-tail construction').listen();
+    fd.add(params, 'showConstruction').name('tip-to-tail (abc)').listen();
+    fd.add(params, 'showConstructionAB').name('tip-to-tail (αβ0)').listen();
     fd.add(params, 'showEpicycles').name('sequence epicycles').listen();
     fd.add(params, 'showOrbit').name('orbit preview (dashed)');
     fd.add(params, 'showLocus').name('dq-frame locus (green)').listen();
@@ -1616,8 +1624,8 @@
       if (params.showDQ) {
         dArrow.userData.set(tmp.set(0, 0, 0), tmp2.copy(dDir).multiplyScalar(1.05));
         qArrow.userData.set(tmp.set(0, 0, 0), tmp2.copy(qDir).multiplyScalar(1.05));
-        labD.position.copy(dDir).multiplyScalar(1.2);
-        labQ.position.copy(qDir).multiplyScalar(1.2);
+        labD.position.copy(dDir).multiplyScalar(1.38);
+        labQ.position.copy(qDir).multiplyScalar(1.38);
       }
 
       // frame-error wedge (red arc from frame d̂ to the signal's pos-seq angle)
@@ -1638,12 +1646,23 @@
       zeroAxGrp.visible = params.showZeroAxis;
       abGrp.visible = params.showAlphaBeta;
 
-      // -------- tip-to-tail construction
+      // -------- tip-to-tail construction (abc)
       consGrp.visible = params.showConstruction;
       if (params.showConstruction) {
         consA.userData.set(tmp.set(0, 0, 0), tmp2.set(a, 0, 0));
         consB.userData.set(tmp.set(a, 0, 0), tmp2.set(0, b, 0));
         consC.userData.set(tmp.set(a, b, 0), tmp2.set(0, 0, c));
+      }
+
+      // -------- tip-to-tail construction (αβ0): same ball from the renamed axes
+      consGrpAB.visible = params.showConstructionAB;
+      if (params.showConstructionAB) {
+        const va = P.dot(UA), vb = P.dot(UB), v0 = P.dot(U0);
+        consAl.userData.set(tmp.set(0, 0, 0), tmp2.copy(UA).multiplyScalar(va));
+        tmp.copy(UA).multiplyScalar(va);
+        consBe.userData.set(tmp, tmp2.copy(UB).multiplyScalar(vb));
+        tmp.addScaledVector(UB, vb);
+        consZe.userData.set(tmp, tmp2.copy(U0).multiplyScalar(v0));
       }
 
       // -------- sequence epicycles (chained; exact decomposition of P)
