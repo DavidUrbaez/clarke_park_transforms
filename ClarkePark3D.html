@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Clarke &amp; Park Transforms as Geometry — the abc → αβ0 → dq0 picture</title>
+  <title>Clarke &amp; Park Transforms as Geometry — abc → αβ0 → dq0</title>
   <style>
     :root {
       --bg0: #070b14;
@@ -19,6 +19,7 @@
       --cold: #40c7ff;
       --qgreen: #7ef0c0;
       --zero: #c792ea;
+      --pink: #ff8fb0;
       --font: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
     }
@@ -46,69 +47,7 @@
       box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
     }
 
-    /* HUD */
-    #hud {
-      top: 14px;
-      left: 14px;
-      padding: 13px 15px;
-      max-width: 350px;
-    }
-
-    #hud h1 { font-size: 14px; margin: 0 0 4px; font-weight: 650; }
-
-    #hud .cap {
-      font-size: 11.5px;
-      color: var(--ink-dim);
-      line-height: 1.45;
-      margin: 6px 0 9px;
-    }
-
-    #hud .cap b { color: var(--ink); font-weight: 600; }
-
-    #hud ul {
-      margin: 6px 0 8px;
-      padding-left: 17px;
-      font-size: 11.5px;
-      color: var(--ink-dim);
-      line-height: 1.5;
-    }
-
-    #hud table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: var(--mono);
-      font-size: 11.5px;
-    }
-
-    #hud td { padding: 1.5px 4px; }
-    #hud td.k { color: var(--ink-dim); }
-    #hud td.v { text-align: right; color: #bcd2ff; min-width: 52px; }
-
-    .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: baseline; }
-
-    /* waveform strip */
-    #scope {
-      bottom: 14px;
-      right: 14px;
-      padding: 9px 12px 7px;
-    }
-
-    #scope .ti { font-size: 11px; color: var(--ink); margin-bottom: 4px; }
-    #scope .ti span { color: var(--ink-dim); }
-    #scope canvas { border-radius: 6px; }
-
-    /* transport */
-    #transport {
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 9px 14px;
-    }
-
-    #transport button {
+    button {
       border: 1px solid var(--panel-b);
       color: var(--ink);
       background: #16203a;
@@ -119,24 +58,185 @@
       font-family: var(--font);
     }
 
-    #transport button:hover { border-color: var(--accent); color: #fff; }
-    #transport button.on { border-color: var(--accent); background: #1d2d55; color: #fff; }
+    button:hover { border-color: var(--accent); color: #fff; }
+    button.on { border-color: var(--accent); background: #1d2d55; color: #fff; }
+    button.zap { color: var(--warn); }
+    button.zap:hover { border-color: var(--warn); }
+
+    /* ------------- HUD ------------- */
+    #hud {
+      top: 14px;
+      left: 14px;
+      padding: 13px 15px;
+      max-width: 352px;
+    }
+
+    #hud h1 { font-size: 14px; margin: 0 0 4px; font-weight: 650; }
+
+    #hud .cap {
+      font-size: 11.5px;
+      color: var(--ink-dim);
+      line-height: 1.45;
+      margin: 5px 0 8px;
+    }
+
+    #hud .cap b { color: var(--ink); font-weight: 600; }
+
+    #hud table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 11.5px;
+    }
+
+    #hud td { padding: 1.5px 4px; }
+    #hud td.k { color: var(--ink-dim); white-space: nowrap; }
+    #hud td.v { text-align: right; color: #bcd2ff; min-width: 50px; }
+
+    #ripple {
+      margin-top: 7px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: var(--warn);
+      border-top: 1px solid var(--panel-b);
+      padding-top: 6px;
+      line-height: 1.4;
+    }
+
+    #btnTour { margin: 3px 0 8px; width: 100%; font-weight: 600; }
+
+    .sw {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      margin-right: 5px;
+      vertical-align: baseline;
+    }
+
+    /* ------------- scope ------------- */
+    #scope {
+      bottom: 14px;
+      right: 14px;
+      padding: 9px 12px 7px;
+    }
+
+    #scope .ti {
+      font-size: 11px;
+      color: var(--ink);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #scope .ti span { color: var(--ink-dim); }
+    #scope canvas { border-radius: 6px; cursor: crosshair; }
+
+    /* ------------- matrix panel ------------- */
+    #matrix {
+      left: 14px;
+      bottom: 14px;
+      padding: 11px 14px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      display: none;
+    }
+
+    #matrix .mt { font-size: 11px; color: var(--ink); font-family: var(--font); margin-bottom: 6px; }
+    #matrix .mt span { color: var(--ink-dim); }
+    #matrix table { border-collapse: collapse; }
+    #matrix td { padding: 1px 5px; text-align: right; color: var(--ink-dim); }
+    #matrix td.br { border-left: 1.5px solid var(--ink-dim); }
+    #matrix td.bl { border-right: 1.5px solid var(--ink-dim); }
+    #matrix .ca { color: var(--warn); }
+    #matrix .cb { color: var(--cold); }
+    #matrix .cc { color: var(--hot); }
+    #matrix .cal { color: #dce6ff; }
+    #matrix .cbe { color: #8fa3cc; }
+    #matrix .cze { color: var(--zero); }
+    #matrix .cd { color: var(--accent); }
+    #matrix .cq { color: var(--qgreen); }
+    #matrix .eq { color: var(--ink); padding: 0 7px; }
+    #matrix .row2 { margin-top: 8px; }
+
+    /* ------------- scenario chips ------------- */
+    #chips {
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+      padding: 7px 10px;
+    }
+
+    #chips button { padding: 4px 10px; font-size: 11.5px; border-radius: 999px; }
+
+    /* ------------- guided tour ------------- */
+    #tour {
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 560px;
+      max-width: calc(100vw - 28px);
+      padding: 12px 16px 10px;
+      display: none;
+    }
+
+    #tour .tt { font-size: 13px; font-weight: 650; margin-bottom: 4px; }
+    #tour .tt small { color: var(--ink-dim); font-weight: 400; margin-left: 8px; }
+
+    #tour .tc {
+      font-size: 11.8px;
+      color: var(--ink-dim);
+      line-height: 1.5;
+      min-height: 52px;
+    }
+
+    #tour .tc b { color: var(--ink); }
+
+    #tour .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    #tour .dots { flex: 1; text-align: center; letter-spacing: 4px; font-size: 13px; color: #2b3450; }
+    #tour .dots b { color: var(--accent); }
+    #tour .x { margin-left: auto; }
+
+    /* ------------- transport ------------- */
+    #transport {
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 14px;
+    }
 
     #transport .rd {
       font-family: var(--mono);
       font-size: 11.5px;
       color: var(--ink-dim);
-      min-width: 86px;
+      min-width: 80px;
       text-align: right;
     }
 
-    /* lil-gui: keep it in-theme, top right */
-    .lil-gui.root { --background-color: rgba(14, 20, 38, .88); --widget-color: #16203a; --title-background-color: #101a33; }
+    /* lil-gui theming */
+    .lil-gui.root {
+      --background-color: rgba(14, 20, 38, .88);
+      --widget-color: #16203a;
+      --title-background-color: #101a33;
+    }
+
+    @media (max-width: 1120px) { #matrix { display: none !important; } }
 
     @media (max-width: 900px) {
-      #hud { max-width: 270px; }
-      #hud ul { display: none; }
-      #scope { display: none; }
+      #hud { max-width: 272px; }
+      #scope, #chips { display: none; }
+      #tour { bottom: 66px; }
     }
   </style>
 </head>
@@ -144,21 +244,15 @@
 <body>
   <div id="app"></div>
 
+  <!-- ================= HUD ================= -->
   <div id="hud" class="panel">
     <h1>Clarke &amp; Park, as geometry</h1>
     <div class="cap">
-      The white ball is the instantaneous point <b>(i<sub>a</sub>, i<sub>b</sub>, i<sub>c</sub>)</b> plotted in 3-D
-      <b>abc-space</b>. Balanced three-phase signals never leave the tilted disc — the plane
-      <b>a+b+c=0</b>. Clarke just renames axes: <b>α, β</b> span that plane, <b>0</b> is the axis
-      perpendicular to it. Park rotates with the vector so it stands still.
+      The white ball is the instantaneous point <b>(i<sub>a</sub>, i<sub>b</sub>, i<sub>c</sub>)</b> in 3-D
+      <b>abc-space</b>. Balanced signals never leave the tilted disc <b>a+b+c=0</b>; Clarke renames its
+      axes to <b>α, β</b>; Park rides the rotation so the vector stands still.
     </div>
-    <ul>
-      <li><b>▶ look down 0-axis</b>: the a, b, c axes land 120° apart — the classic space-vector diagram.</li>
-      <li>Toggle <b>Park (dq) frame</b>: the vector freezes, the abc axes spin backwards.</li>
-      <li>Add <b>negative seq</b>: circle → ellipse, and d, q wobble at 2ω.</li>
-      <li>Add <b>zero seq</b>: the ball finally leaves the plane, sliding along the purple 0-axis.</li>
-      <li>Add <b>5th harmonic</b>: a lobed orbit, a 6ω ripple in dq.</li>
-    </ul>
+    <button id="btnTour">▶ start the guided tour&nbsp;&nbsp;<small>(8 scenes)</small></button>
     <table>
       <tr>
         <td class="k"><span class="sw" style="background:var(--warn)"></span>i_a</td><td class="v" id="ra">–</td>
@@ -175,17 +269,55 @@
         <td class="k"><span class="sw" style="background:var(--qgreen)"></span>q</td><td class="v" id="rq">–</td>
         <td class="k">|s&#8407;|</td><td class="v" id="rm">–</td>
       </tr>
+      <tr>
+        <td class="k">‖abc‖</td><td class="v" id="rnabc">–</td>
+        <td class="k">‖αβ0‖</td><td class="v" id="rnab0">–</td>
+        <td class="k">ε<sub>θ</sub></td><td class="v" id="rerr">–</td>
+      </tr>
     </table>
+    <div id="ripple">dq ripple: none — pure DC</div>
   </div>
 
+  <!-- ================= scope ================= -->
   <div id="scope" class="panel">
-    <div class="ti">waveforms — <span>abc solid, d&amp;q dashed</span></div>
-    <canvas id="scopeCv" width="340" height="104"></canvas>
+    <div class="ti"><span id="scopeTitle">waveforms</span><span>abc solid · d&amp;q dashed · hover to inspect</span></div>
+    <canvas id="scopeCv"></canvas>
   </div>
 
+  <!-- ================= matrix panel ================= -->
+  <div id="matrix" class="panel">
+    <div class="mt">the transform, live <span id="mConv">— amplitude-invariant (2/3)</span></div>
+    <div id="mClarke"></div>
+    <div id="mPark" class="row2"></div>
+  </div>
+
+  <!-- ================= scenario chips ================= -->
+  <div id="chips" class="panel">
+    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0,"A5":0,"A7":0}' class="on">Balanced</button>
+    <button data-p='{"A1":0.8,"A2":0.25,"A0":0,"A3":0,"A5":0,"A7":0}' title="what an unbalanced fault injects">Unbalanced sag</button>
+    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0,"A5":0.2,"A7":0.14}' title="6-pulse rectifier flavour: 5th + 7th">Rectifier harmonics</button>
+    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0.35,"A5":0,"A7":0}' title="triplen = pure zero-sequence">Triplen 3rd</button>
+    <button data-p='{"A1":1,"A2":0.18,"A0":0.25,"A3":0,"A5":0.18,"A7":0.1}'>Everything</button>
+  </div>
+
+  <!-- ================= guided tour ================= -->
+  <div id="tour" class="panel">
+    <div class="tt"><span id="tourTitle"></span><small id="tourStep"></small></div>
+    <div class="tc" id="tourCap"></div>
+    <div class="nav">
+      <button id="tourPrev">◀ back</button>
+      <button id="tourNext">next ▶</button>
+      <div class="dots" id="tourDots"></div>
+      <button id="tourExit" class="x">✕ exit tour</button>
+    </div>
+  </div>
+
+  <!-- ================= transport ================= -->
   <div id="transport" class="panel">
-    <button id="btnPlay">⏸ pause</button>
-    <button id="btnPark">Park (dq) frame</button>
+    <button id="btnPlay" title="space">⏸ pause</button>
+    <button id="btnPark" title="P — rotate the world with the dq frame">Park frame</button>
+    <button id="btnJump" class="zap" title="instant +30° phase jump on the signal">⚡ +30° jump</button>
+    <button id="btnSag" class="zap" title="unbalanced voltage sag for 3 cycles">⚡ sag 3 cyc</button>
     <div class="rd" id="rdTheta">θ = 0°</div>
   </div>
 
@@ -200,91 +332,197 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import { Line2 } from 'three/addons/lines/Line2.js';
+    import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+    import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
-    // ---------------------------------------------------------------- basis
+    // =================================================================== basis
     // World axes ARE the abc axes: x=a, y=b, z=c. Everything else is derived.
     const U0 = new THREE.Vector3(1, 1, 1).normalize();   // zero-sequence axis
-    const UA = new THREE.Vector3(2, -1, -1).normalize(); // Clarke α direction, in the plane
-    const UB = new THREE.Vector3(0, 1, -1).normalize();  // Clarke β direction, in the plane
+    const UA = new THREE.Vector3(2, -1, -1).normalize(); // Clarke α direction (in-plane)
+    const UB = new THREE.Vector3(0, 1, -1).normalize();  // Clarke β direction (in-plane)
+    const S32 = Math.sqrt(1.5);                          // geometric radius per unit amplitude
+    const S3 = Math.sqrt(3);                             // geometric 0-axis length per unit zero-seq
+    const K = 2 * Math.PI / 3;
 
     const COL = {
       a: 0xffd166, b: 0x40c7ff, c: 0xff7528,
       alpha: 0xdce6ff, beta: 0x8fa3cc, zero: 0xc792ea,
-      d: 0x5aa0ff, q: 0x7ef0c0, vec: 0xffffff, plane: 0x2b3450
+      d: 0x5aa0ff, q: 0x7ef0c0, vec: 0xffffff,
+      pos: 0x5aa0ff, neg: 0xff7528, h5: 0xffd166, h7: 0x9df09d,
+      pll: 0xff8fb0, plane: 0x2b3450,
     };
 
-    // ---------------------------------------------------------------- params
+    // =================================================================== params
     const params = {
-      A1: 1.0,        // positive-sequence amplitude
-      A2: 0.0,        // negative-sequence amplitude (unbalance)
-      A0: 0.0,        // zero-sequence amplitude
-      A5: 0.0,        // 5th harmonic amplitude (naturally negative-sequence)
-      speed: 0.22,    // electrical cycles per second (visual)
-      park: false,    // rotate the world with the dq frame
-      showPlane: true,
-      showTrail: true,
-      showDQ: true,
-      showDrop: true,
+      // signal content
+      A1: 1.0, A2: 0.0, A0: 0.0, A3: 0.0, A5: 0.0, A7: 0.0,
+      speed: 0.22,             // electrical cycles per second (visual slow motion)
+      // dq frame
+      park: false,
+      frameSrc: 'ideal',       // ideal (open-loop ω) | detuned | pll
+      detune: 2.0,             // % frequency error when frameSrc = detuned
+      pllBw: 0.15,             // PLL bandwidth as a fraction of line frequency
+      convention: 'amp',       // amp | pow  (readouts & matrix only; geometry is invariant)
+      // display
+      showPlane: true, showTrail: true, showLocus: true, showDQ: true,
+      showDrop: true, showConstruction: false, showEpicycles: false,
+      showOrbit: true, showMatrix: false,
+      bloom: true, glow: 0.14,
       paused: false,
     };
 
-    // ---------------------------------------------------------------- signals
-    const K = 2 * Math.PI / 3;
+    // =================================================================== signal
+    // signal angle θs = th + ph1; ph1 is stepped by phase-jump events
+    let th = 0, ph1 = 0;
+    // frame angle: open-loop/detuned integrate their own accumulator; PLL has state
+    let thF = 0;
+    const pll = { thHat: 0, xInt: 0 };
 
-    // phase j = 0,1,2  →  a,b,c
-    function phaseVal(j, th) {
-      return params.A1 * Math.cos(th - j * K)
-        + params.A2 * Math.cos(th + j * K)
-        + params.A0 * Math.cos(th)
-        + params.A5 * Math.cos(5 * (th - j * K));
+    // phase j = 0,1,2 → a,b,c.  Harmonic h·(θ−jK) automatically carries its
+    // sequence identity: h=1 pos, h=5 → −5jK ≡ +jK (neg), h=7 → −7jK ≡ −jK (pos),
+    // h=3 → −3jK ≡ 0 (triplen = zero-sequence).
+    function phaseVal(j, ths) {
+      return params.A1 * Math.cos(ths - j * K)
+        + params.A2 * Math.cos(ths + j * K)
+        + params.A0 * Math.cos(ths)
+        + params.A3 * Math.cos(3 * (ths - j * K))
+        + params.A5 * Math.cos(5 * (ths - j * K))
+        + params.A7 * Math.cos(7 * (ths - j * K));
     }
 
-    // amplitude-invariant Clarke + Park
-    function transforms(a, b, c, th) {
-      const al = (2 * a - b - c) / 3;
-      const be = (b - c) / Math.sqrt(3);
-      const ze = (a + b + c) / 3;
-      const d = al * Math.cos(th) + be * Math.sin(th);
-      const q = -al * Math.sin(th) + be * Math.cos(th);
+    // Clarke + Park under the selected convention (readout values).
+    // amp:  α=(2a−b−c)/3        β=(b−c)/√3   0=(a+b+c)/3
+    // pow:  α=(2a−b−c)/√6       β=(b−c)/√2   0=(a+b+c)/√3   (orthonormal — a pure rotation)
+    function transforms(a, b, c, thFrame) {
+      let al, be, ze;
+      if (params.convention === 'pow') {
+        al = (2 * a - b - c) / Math.sqrt(6);
+        be = (b - c) / Math.sqrt(2);
+        ze = (a + b + c) / Math.sqrt(3);
+      } else {
+        al = (2 * a - b - c) / 3;
+        be = (b - c) / Math.sqrt(3);
+        ze = (a + b + c) / 3;
+      }
+      const d = al * Math.cos(thFrame) + be * Math.sin(thFrame);
+      const q = -al * Math.sin(thFrame) + be * Math.cos(thFrame);
       return { al, be, ze, d, q };
     }
 
-    // ---------------------------------------------------------------- scene
+    const wrapPi = x => Math.atan2(Math.sin(x), Math.cos(x));
+
+    // =================================================================== renderer
     const app = document.getElementById('app');
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
+    const PR = Math.min(devicePixelRatio, 2);
+    renderer.setPixelRatio(PR);
     renderer.setSize(innerWidth, innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
     app.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x070b14, 7.5, 17);
+
     const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.01, 100);
     camera.position.set(4.1, -0.5, 2.3);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
+    controls.minDistance = 1.4;
+    controls.maxDistance = 12;
 
-    // world group — rotated by −θ about U0 in Park view, so the dq frame appears frozen
+    // post-processing: MSAA target (composer bypasses canvas AA) + bloom
+    const rt = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { samples: 4, type: THREE.HalfFloatType });
+    const composer = new EffectComposer(renderer, rt);
+    composer.setPixelRatio(PR);
+    composer.setSize(innerWidth, innerHeight);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), params.glow, 0.3, 0.75);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+
+    // world group — eased toward −θF about U0 in Park view so the dq frame freezes
     const world = new THREE.Group();
     scene.add(world);
-
     scene.add(new THREE.AmbientLight(0xffffff, 0.9));
 
-    // ------------------------------------------------- helpers: labels, axes
+    // ============================================================ small helpers
+    const fatMats = []; // LineMaterials needing .resolution updates
+
     function makeLabel(text, colorCss, scale = 0.30) {
       const cv = document.createElement('canvas');
-      cv.width = 160; cv.height = 80;
+      cv.width = 512; cv.height = 256;
       const g = cv.getContext('2d');
-      g.font = '600 52px ui-monospace, Consolas, monospace';
+      g.font = '600 190px ui-monospace, Consolas, monospace';
       g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 10;
+      g.shadowColor = 'rgba(0,0,0,.85)'; g.shadowBlur = 34;
       g.fillStyle = colorCss;
-      g.fillText(text, 80, 42);
+      g.fillText(text, 256, 138);
       const tex = new THREE.CanvasTexture(cv);
       tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
       sp.scale.set(scale * 2, scale, 1);
+      sp.renderOrder = 5;
       return sp;
+    }
+
+    // shared radial-glow texture for halos
+    const glowTex = (() => {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 128;
+      const g = cv.getContext('2d');
+      const gr = g.createRadialGradient(64, 64, 2, 64, 64, 64);
+      gr.addColorStop(0, 'rgba(255,255,255,1)');
+      gr.addColorStop(0.35, 'rgba(255,255,255,.35)');
+      gr.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+      const t = new THREE.CanvasTexture(cv);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+
+    function makeHalo(color, scale) {
+      const m = new THREE.SpriteMaterial({
+        map: glowTex, color, transparent: true,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      });
+      const sp = new THREE.Sprite(m);
+      sp.scale.setScalar(scale);
+      return sp;
+    }
+
+    // solid arrow (cylinder shaft + cone head) — reads far better than 1px ArrowHelper
+    const YUP = new THREE.Vector3(0, 1, 0);
+    function makeArrow(color, r = 0.013, headLen = 0.11, headR = 0.036, boost = 1) {
+      const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(boost) });
+      const grp = new THREE.Group();
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 12), mat);
+      const head = new THREE.Mesh(new THREE.ConeGeometry(headR, headLen, 16), mat);
+      grp.add(shaft, head);
+      const dir = new THREE.Vector3();
+      grp.userData.set = (origin, vec) => {
+        const len = vec.length();
+        if (len < 2e-3) { grp.visible = false; return; }
+        grp.visible = true;
+        dir.copy(vec).normalize();
+        grp.position.copy(origin);
+        grp.quaternion.setFromUnitVectors(YUP, dir);
+        const hl = Math.min(headLen, len * 0.55);
+        const sl = Math.max(len - hl, 1e-4);
+        shaft.scale.set(r, sl, r);
+        shaft.position.y = sl / 2;
+        head.scale.setScalar(hl / headLen);
+        head.position.y = len - hl / 2;
+      };
+      grp.userData.mat = mat;
+      return grp;
     }
 
     function axisLine(dir, len, color, opNeg = 0.35) {
@@ -292,8 +530,7 @@
       const mk = (s0, s1, op) => {
         const geo = new THREE.BufferGeometry().setFromPoints(
           [dir.clone().multiplyScalar(s0), dir.clone().multiplyScalar(s1)]);
-        const ln = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: op }));
-        grp.add(ln);
+        grp.add(new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: op })));
       };
       mk(0, len, 0.95);
       mk(-len, 0, opNeg);
@@ -301,14 +538,49 @@
         new THREE.ConeGeometry(0.030, 0.10, 14),
         new THREE.MeshBasicMaterial({ color }));
       cone.position.copy(dir.clone().multiplyScalar(len));
-      cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      cone.quaternion.setFromUnitVectors(YUP, dir);
       grp.add(cone);
       return grp;
     }
 
-    const AXL = 2.0;
+    // fat polyline with in-place per-frame updates (no reallocation)
+    function makeFatLine(N, width, opts = {}) {
+      const geo = new LineGeometry();
+      geo.setPositions(new Float32Array(N * 3));
+      geo.setColors(new Float32Array(N * 3));
+      const mat = new LineMaterial({
+        linewidth: width, vertexColors: true, transparent: true,
+        depthWrite: false, dashed: !!opts.dashed,
+        dashSize: opts.dashSize ?? 0.06, gapSize: opts.gapSize ?? 0.05,
+        opacity: opts.opacity ?? 1,
+      });
+      mat.resolution.set(innerWidth, innerHeight);
+      fatMats.push(mat);
+      const line = new Line2(geo, mat);
+      line.frustumCulled = false;
+      geo.instanceCount = 0;
+      return {
+        line, geo, mat, N,
+        // pts/cols: Float32Array(N*3); n: valid point count
+        write(pts, cols, n) {
+          const s = geo.attributes.instanceStart.data;
+          const c = geo.attributes.instanceColorStart.data;
+          const segs = Math.max(0, Math.min(n, this.N) - 1);
+          for (let i = 0; i < segs; i++) {
+            const b = i * 6, p = i * 3;
+            s.array[b] = pts[p]; s.array[b + 1] = pts[p + 1]; s.array[b + 2] = pts[p + 2];
+            s.array[b + 3] = pts[p + 3]; s.array[b + 4] = pts[p + 4]; s.array[b + 5] = pts[p + 5];
+            c.array[b] = cols[p]; c.array[b + 1] = cols[p + 1]; c.array[b + 2] = cols[p + 2];
+            c.array[b + 3] = cols[p + 3]; c.array[b + 4] = cols[p + 4]; c.array[b + 5] = cols[p + 5];
+          }
+          s.needsUpdate = true; c.needsUpdate = true;
+          geo.instanceCount = segs;
+        },
+      };
+    }
 
-    // abc axes (the world axes themselves)
+    // ============================================================ static scene
+    const AXL = 2.0;
     const axA = new THREE.Vector3(1, 0, 0), axB = new THREE.Vector3(0, 1, 0), axC = new THREE.Vector3(0, 0, 1);
     world.add(axisLine(axA, AXL, COL.a));
     world.add(axisLine(axB, AXL, COL.b));
@@ -317,183 +589,715 @@
     const labB = makeLabel('b', '#40c7ff'); labB.position.copy(axB).multiplyScalar(AXL + 0.16); world.add(labB);
     const labC = makeLabel('c', '#ff7528'); labC.position.copy(axC).multiplyScalar(AXL + 0.16); world.add(labC);
 
-    // zero-sequence axis
     world.add(axisLine(U0, AXL * 0.85, COL.zero, 0.5));
     const lab0 = makeLabel('0', '#c792ea'); lab0.position.copy(U0).multiplyScalar(AXL * 0.85 + 0.15); world.add(lab0);
 
-    // α, β axes in the plane
     const planeGrp = new THREE.Group(); world.add(planeGrp);
     planeGrp.add(axisLine(UA, AXL * 0.85, COL.alpha, 0.25));
     planeGrp.add(axisLine(UB, AXL * 0.85, COL.beta, 0.25));
     const labAl = makeLabel('α', '#dce6ff'); labAl.position.copy(UA).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labAl);
     const labBe = makeLabel('β', '#8fa3cc'); labBe.position.copy(UB).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labBe);
 
-    // the αβ plane: translucent disc + polar grid, normal = U0
-    const PR = 1.75;
+    // αβ plane: soft radial disc + polar grid + luminous rim
+    const PRAD = 1.75;
+    const discTex = (() => {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 256;
+      const g = cv.getContext('2d');
+      const gr = g.createRadialGradient(128, 128, 10, 128, 128, 128);
+      gr.addColorStop(0, 'rgba(56,70,110,.42)');
+      gr.addColorStop(0.75, 'rgba(43,52,80,.22)');
+      gr.addColorStop(1, 'rgba(43,52,80,0)');
+      g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+      const t = new THREE.CanvasTexture(cv);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
     const disc = new THREE.Mesh(
-      new THREE.CircleGeometry(PR, 72),
-      new THREE.MeshBasicMaterial({ color: COL.plane, transparent: true, opacity: 0.20, side: THREE.DoubleSide, depthWrite: false }));
+      new THREE.CircleGeometry(PRAD, 72),
+      new THREE.MeshBasicMaterial({ map: discTex, transparent: true, side: THREE.DoubleSide, depthWrite: false }));
     disc.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), U0);
+    disc.renderOrder = -2;
     planeGrp.add(disc);
 
-    const pol = new THREE.PolarGridHelper(PR, 12, 4, 48, 0x36446e, 0x233054);
-    pol.material.transparent = true; pol.material.opacity = 0.5; pol.material.depthWrite = false;
-    pol.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), U0);
+    const pol = new THREE.PolarGridHelper(PRAD, 12, 4, 48, 0x36446e, 0x233054);
+    pol.material.transparent = true; pol.material.opacity = 0.45; pol.material.depthWrite = false;
+    pol.quaternion.setFromUnitVectors(YUP, U0);
     planeGrp.add(pol);
 
-    // ------------------------------------------------- dynamic actors
-    // space vector arrow + ball
-    const vecArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 1, COL.vec, 0.09, 0.045);
-    world.add(vecArrow);
-    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.045, 20, 14),
+    const rim = new THREE.Mesh(
+      new THREE.TorusGeometry(PRAD, 0.006, 6, 128),
+      new THREE.MeshBasicMaterial({ color: 0x36446e, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite: false }));
+    rim.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), U0);
+    planeGrp.add(rim);
+
+    // ambient dust for depth parallax (in scene, not world — Park must not whirl the stars)
+    const dust = (() => {
+      const n = 420, pos = new Float32Array(n * 3);
+      let seed = 42;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let i = 0; i < n; i++) {
+        const r = 5 + 6 * rnd(), t = Math.acos(2 * rnd() - 1), p = 2 * Math.PI * rnd();
+        pos[i * 3] = r * Math.sin(t) * Math.cos(p);
+        pos[i * 3 + 1] = r * Math.sin(t) * Math.sin(p);
+        pos[i * 3 + 2] = r * Math.cos(t);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+        size: 0.022, sizeAttenuation: true, color: 0x4a5c8f,
+        transparent: true, opacity: 0.5, depthWrite: false,
+      }));
+      scene.add(pts);
+      return pts;
+    })();
+
+    // ============================================================ dynamic actors
+    // space vector + ball + halo
+    const vecArrow = makeArrow(COL.vec, 0.014, 0.11, 0.038, 1.05); world.add(vecArrow);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(0.037, 20, 14),
       new THREE.MeshBasicMaterial({ color: 0xffffff }));
     world.add(ball);
+    const ballHalo = makeHalo(0xbfd8ff, 0.16); world.add(ballHalo);
 
-    // αβ projection: dot on the plane + dashed drop line (the zero-seq component)
+    // αβ projection + zero-seq drop line
     const dropGrp = new THREE.Group(); world.add(dropGrp);
-    const projDot = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 10),
+    const projDot = new THREE.Mesh(new THREE.SphereGeometry(0.026, 14, 10),
       new THREE.MeshBasicMaterial({ color: 0x9db6e8 }));
     dropGrp.add(projDot);
-    const dropGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    const dropLine = new THREE.Line(dropGeo,
+    const dropLine = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
       new THREE.LineDashedMaterial({ color: COL.zero, dashSize: 0.055, gapSize: 0.04, transparent: true, opacity: 0.9 }));
     dropGrp.add(dropLine);
-    const projGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-    const projLine = new THREE.Line(projGeo,
-      new THREE.LineBasicMaterial({ color: 0x9db6e8, transparent: true, opacity: 0.55 }));
+    const projLine = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
+      new THREE.LineBasicMaterial({ color: 0x9db6e8, transparent: true, opacity: 0.5 }));
     dropGrp.add(projLine);
 
-    // dq frame: two arrows rotating in the plane
+    // dq frame arrows (+ PLL ghost + error wedge)
     const dqGrp = new THREE.Group(); world.add(dqGrp);
-    const dArrow = new THREE.ArrowHelper(UA, new THREE.Vector3(), 1.05, COL.d, 0.08, 0.04);
-    const qArrow = new THREE.ArrowHelper(UB, new THREE.Vector3(), 1.05, COL.q, 0.08, 0.04);
+    const dArrow = makeArrow(COL.d, 0.011, 0.09, 0.032, 1.25);
+    const qArrow = makeArrow(COL.q, 0.011, 0.09, 0.032, 1.25);
     dqGrp.add(dArrow, qArrow);
     const labD = makeLabel('d', '#5aa0ff', 0.24); dqGrp.add(labD);
     const labQ = makeLabel('q', '#7ef0c0', 0.24); dqGrp.add(labQ);
 
-    // trail: ring of recent ball positions, fading to background
-    const TRAIL_N = 440;
-    const trailPts = [];
-    const trailPos = new Float32Array(TRAIL_N * 3);
-    const trailCol = new Float32Array(TRAIL_N * 3);
-    const trailGeo = new THREE.BufferGeometry();
-    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
-    trailGeo.setAttribute('color', new THREE.BufferAttribute(trailCol, 3));
-    trailGeo.setDrawRange(0, 0);
-    const trail = new THREE.Line(trailGeo,
-      new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95 }));
-    trail.frustumCulled = false;
-    world.add(trail);
-    const cHead = new THREE.Color(0xffe9a8), cTail = new THREE.Color(0x0d1426), cTmp = new THREE.Color();
+    const errWedge = (() => {
+      const geo = new THREE.BufferGeometry().setFromPoints(
+        Array.from({ length: 33 }, () => new THREE.Vector3()));
+      const l = new THREE.Line(geo, new THREE.LineBasicMaterial({
+        color: 0xff5964, transparent: true, opacity: 0.95 }));
+      l.visible = false;
+      world.add(l);
+      return l;
+    })();
 
-    // ------------------------------------------------- scope strip
-    const scopeCv = document.getElementById('scopeCv');
-    const sg = scopeCv.getContext('2d');
-    const SW = scopeCv.width, SH = scopeCv.height;
-    const hist = { a: [], b: [], c: [], d: [], q: [] };
+    // tip-to-tail construction: a·x̂ + b·ŷ + c·ẑ
+    const consGrp = new THREE.Group(); world.add(consGrp);
+    const consA = makeArrow(COL.a, 0.010, 0.085, 0.028);
+    const consB = makeArrow(COL.b, 0.010, 0.085, 0.028);
+    const consC = makeArrow(COL.c, 0.010, 0.085, 0.028);
+    consGrp.add(consA, consB, consC);
 
-    function pushHist(a, b, c, d, q) {
-      hist.a.push(a); hist.b.push(b); hist.c.push(c); hist.d.push(d); hist.q.push(q);
-      for (const k in hist) if (hist[k].length > SW) hist[k].shift();
+    // sequence epicycles: chained pos / neg / 5th / 7th (in-plane) + zero (off-plane)
+    const epiGrp = new THREE.Group(); world.add(epiGrp);
+    const epiPos = makeArrow(COL.pos, 0.010, 0.085, 0.028, 1.15);
+    const epiNeg = makeArrow(COL.neg, 0.010, 0.085, 0.028, 1.15);
+    const epi5 = makeArrow(COL.h5, 0.009, 0.075, 0.025, 1.1);
+    const epi7 = makeArrow(COL.h7, 0.009, 0.075, 0.025, 1.1);
+    const epiZ = makeArrow(COL.zero, 0.009, 0.075, 0.025, 1.15);
+    epiGrp.add(epiPos, epiNeg, epi5, epi7, epiZ);
+
+    // ghost orbit rings for each epicycle stage (unit circle in the plane, scaled)
+    const ringGeo = (() => {
+      const pts = [];
+      for (let i = 0; i <= 72; i++) {
+        const f = i / 72 * 2 * Math.PI;
+        pts.push(UA.clone().multiplyScalar(Math.cos(f)).addScaledVector(UB, Math.sin(f)));
+      }
+      return new THREE.BufferGeometry().setFromPoints(pts);
+    })();
+    function makeRing(color) {
+      const r = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({
+        color, transparent: true, opacity: 0.35 }));
+      epiGrp.add(r);
+      return r;
+    }
+    const ringPos = makeRing(COL.pos), ringNeg = makeRing(COL.neg),
+      ring5 = makeRing(COL.h5), ring7 = makeRing(COL.h7);
+
+    // predicted orbit (closed-form, rebuilt on signal change) — dashed, purple where off-plane
+    const ORB_N = 512;
+    const orbit = makeFatLine(ORB_N + 1, 1.6, { dashed: true, opacity: 0.5 });
+    world.add(orbit.line);
+    const orbPts = new Float32Array((ORB_N + 1) * 3), orbCols = new Float32Array((ORB_N + 1) * 3);
+    const cOrbA = new THREE.Color(0x36446e), cOrbB = new THREE.Color(0xc792ea), cOrbT = new THREE.Color();
+    let orbitSig = '';
+
+    function rebuildOrbit() {
+      for (let i = 0; i <= ORB_N; i++) {
+        const f = i / ORB_N * 2 * Math.PI;
+        const a = phaseVal(0, f), b = phaseVal(1, f), c = phaseVal(2, f);
+        orbPts[i * 3] = a; orbPts[i * 3 + 1] = b; orbPts[i * 3 + 2] = c;
+        const off = Math.min(1, Math.abs((a + b + c) / S3) / 0.7);
+        cOrbT.lerpColors(cOrbA, cOrbB, off);
+        orbCols[i * 3] = cOrbT.r; orbCols[i * 3 + 1] = cOrbT.g; orbCols[i * 3 + 2] = cOrbT.b;
+      }
+      orbit.write(orbPts, orbCols, ORB_N + 1);
+      orbit.line.computeLineDistances();
     }
 
-    function drawScope() {
+    // abc comet trail (history — survives events/PLL transients faithfully)
+    const TRAIL_N = 440;
+    const trailPts = new Float32Array(TRAIL_N * 3), trailCols = new Float32Array(TRAIL_N * 3);
+    let trailLen = 0;
+    const trail = makeFatLine(TRAIL_N, 3.2);
+    world.add(trail.line);
+    const cHead = new THREE.Color(0xffe9a8), cTail = new THREE.Color(0x0d1426), cT = new THREE.Color();
+
+    // dq-frame locus (history of geometric frame coords, drawn in a frame-riding group)
+    const dqSpace = new THREE.Group(); world.add(dqSpace);
+    const locusHist = new Float32Array(TRAIL_N * 3); // (dg, qg, zg) geometric coords
+    let locusLen = 0;
+    const locusPts = new Float32Array(TRAIL_N * 3), locusCols = new Float32Array(TRAIL_N * 3);
+    const locus = makeFatLine(TRAIL_N, 2.4, { opacity: 0.95 });
+    dqSpace.add(locus.line);
+    const cLHead = new THREE.Color(0x7ef0c0), cLTail = new THREE.Color(0x0d1426);
+
+    function pushRing(buf, len, x, y, z) {
+      if (len < TRAIL_N) {
+        buf[len * 3] = x; buf[len * 3 + 1] = y; buf[len * 3 + 2] = z;
+        return len + 1;
+      }
+      buf.copyWithin(0, 3);
+      buf[(TRAIL_N - 1) * 3] = x; buf[(TRAIL_N - 1) * 3 + 1] = y; buf[(TRAIL_N - 1) * 3 + 2] = z;
+      return TRAIL_N;
+    }
+
+    function fadeColors(cols, n, head, tail) {
+      for (let i = 0; i < n; i++) {
+        cT.lerpColors(tail, head, n < 2 ? 1 : i / (n - 1));
+        cols[i * 3] = cT.r; cols[i * 3 + 1] = cT.g; cols[i * 3 + 2] = cT.b;
+      }
+    }
+
+    // ghost ball for scope hover
+    const ghost = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 12),
+      new THREE.MeshBasicMaterial({ color: 0xbfd8ff, transparent: true, opacity: 0.45 }));
+    ghost.visible = false;
+    world.add(ghost);
+
+    // ============================================================ scope (HiDPI)
+    const scopeCv = document.getElementById('scopeCv');
+    const sg = scopeCv.getContext('2d');
+    const SW = 380, SH = 150;
+    const SPAN = 6 * Math.PI; // 3 electrical cycles across the strip
+
+    function sizeScope() {
+      const dpr = Math.min(devicePixelRatio, 2);
+      scopeCv.width = SW * dpr; scopeCv.height = SH * dpr;
+      scopeCv.style.width = SW + 'px'; scopeCv.style.height = SH + 'px';
+      sg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    sizeScope();
+
+    // history samples: θs-stamped so the x-axis is exact regardless of frame rate
+    const hist = [];            // {th, a,b,c,d,q, px,py,pz}
+    const markers = [];         // {th, label}
+    let hoverTh = null;
+
+    function pushHist(ths, a, b, c, d, q, P) {
+      hist.push({ th: ths, a, b, c, d, q, px: P.x, py: P.y, pz: P.z });
+      while (hist.length && ths - hist[0].th > SPAN * 1.02) hist.shift();
+      while (markers.length && ths - markers[0].th > SPAN * 1.02) markers.shift();
+    }
+
+    function drawScope(thsNow) {
       sg.clearRect(0, 0, SW, SH);
       sg.fillStyle = 'rgba(7,11,20,.55)'; sg.fillRect(0, 0, SW, SH);
       const yMax = 2.3, y0 = SH / 2;
-      sg.strokeStyle = '#233054'; sg.lineWidth = 1;
+      const x = t => SW - (thsNow - t) / SPAN * SW;
+
+      // 90° gridlines (count the 2ω / 6ω wobbles against them)
+      sg.strokeStyle = '#1a2440'; sg.lineWidth = 1;
+      const q90 = Math.PI / 2;
+      for (let g = Math.ceil((thsNow - SPAN) / q90) * q90; g <= thsNow; g += q90) {
+        const gx = x(g);
+        sg.beginPath(); sg.moveTo(gx, 0); sg.lineTo(gx, SH); sg.stroke();
+      }
+      sg.strokeStyle = '#233054';
       sg.beginPath(); sg.moveTo(0, y0); sg.lineTo(SW, y0); sg.stroke();
-      const tr = (arr, css, dash) => {
-        if (arr.length < 2) return;
-        sg.strokeStyle = css; sg.lineWidth = 1.4;
-        sg.setLineDash(dash ? [4, 3] : []);
-        sg.beginPath();
-        const off = SW - arr.length;
-        for (let i = 0; i < arr.length; i++) {
-          const y = y0 - (arr[i] / yMax) * (SH / 2 - 4);
-          i ? sg.lineTo(off + i, y) : sg.moveTo(off + i, y);
+
+      // event markers
+      for (const m of markers) {
+        const mx = x(m.th);
+        if (mx < 0) continue;
+        sg.strokeStyle = 'rgba(255,209,102,.55)'; sg.setLineDash([3, 3]);
+        sg.beginPath(); sg.moveTo(mx, 0); sg.lineTo(mx, SH); sg.stroke();
+        sg.setLineDash([]);
+        sg.fillStyle = 'rgba(255,209,102,.8)'; sg.font = '9px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+        sg.fillText(m.label, mx + 3, 9);
+      }
+
+      const trace = (key, css, dash) => {
+        if (hist.length < 2) return;
+        // pass 1: glow, pass 2: crisp
+        for (const [lw, alpha] of [[4, 0.20], [1.5, 1]]) {
+          sg.strokeStyle = css; sg.globalAlpha = alpha; sg.lineWidth = lw;
+          sg.setLineDash(dash ? [4, 3] : []);
+          sg.beginPath();
+          let started = false;
+          for (const s of hist) {
+            const sx = x(s.th);
+            if (sx < -2) continue;
+            const sy = y0 - (s[key] / yMax) * (SH / 2 - 5);
+            started ? sg.lineTo(sx, sy) : sg.moveTo(sx, sy);
+            started = true;
+          }
+          sg.stroke();
         }
-        sg.stroke();
+        sg.globalAlpha = 1; sg.setLineDash([]);
       };
-      tr(hist.a, '#ffd166'); tr(hist.b, '#40c7ff'); tr(hist.c, '#ff7528');
-      tr(hist.d, '#5aa0ff', true); tr(hist.q, '#7ef0c0', true);
-      sg.setLineDash([]);
+      trace('a', '#ffd166'); trace('b', '#40c7ff'); trace('c', '#ff7528');
+      trace('d', '#5aa0ff', true); trace('q', '#7ef0c0', true);
+
+      // hover cursor + readout + 3D ghost
+      ghost.visible = false;
+      if (hoverTh !== null && hist.length > 1) {
+        const hx = x(hoverTh);
+        if (hx >= 0 && hx <= SW) {
+          sg.strokeStyle = 'rgba(220,230,255,.7)';
+          sg.beginPath(); sg.moveTo(hx, 0); sg.lineTo(hx, SH); sg.stroke();
+          // nearest sample
+          let best = hist[0], bd = Infinity;
+          for (const s of hist) {
+            const dd = Math.abs(s.th - hoverTh);
+            if (dd < bd) { bd = dd; best = s; }
+          }
+          ghost.position.set(best.px, best.py, best.pz);
+          ghost.visible = true;
+          sg.font = '10px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+          sg.fillStyle = 'rgba(7,11,20,.85)';
+          const tx = Math.min(hx + 6, SW - 128);
+          sg.fillRect(tx, 12, 122, 30);
+          sg.fillStyle = '#dce6ff';
+          sg.fillText(`a ${best.a.toFixed(2)}  b ${best.b.toFixed(2)}  c ${best.c.toFixed(2)}`, tx + 5, 24);
+          sg.fillText(`d ${best.d.toFixed(2)}  q ${best.q.toFixed(2)}`, tx + 5, 36);
+        }
+      }
     }
 
-    // ------------------------------------------------- HUD readouts
+    scopeCv.addEventListener('pointermove', e => {
+      const r = scopeCv.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width;
+      hoverTh = (th + ph1) - (1 - fx) * SPAN;
+    });
+    scopeCv.addEventListener('pointerleave', () => { hoverTh = null; });
+
+    // ============================================================ matrix panel
+    const mEl = { conv: document.getElementById('mConv'), clarke: document.getElementById('mClarke'), park: document.getElementById('mPark') };
+    let mCells = null;
+
+    function buildMatrixDom() {
+      const pow = params.convention === 'pow';
+      mEl.conv.textContent = pow ? '— power-invariant √(2/3): a pure rotation' : '— amplitude-invariant (2/3)';
+      const M = pow
+        ? [[0.816, -0.408, -0.408], [0, 0.707, -0.707], [0.577, 0.577, 0.577]]
+        : [[0.667, -0.333, -0.333], [0, 0.577, -0.577], [0.333, 0.333, 0.333]];
+      const rowCls = ['cal', 'cbe', 'cze'], resId = ['mal', 'mbe', 'mze'];
+      let h = '<table>';
+      const outSym = ['α', 'β', '0'];
+      for (let i = 0; i < 3; i++) {
+        h += `<tr><td class="${rowCls[i]}${i === 0 ? ' bl' : ''}">${outSym[i]}</td>`
+          + (i === 1 ? '<td class="eq">=</td>' : '<td></td>')
+          + `<td class="br">${M[i][0].toFixed(3)}</td><td>${M[i][1].toFixed(3)}</td><td class="bl">${M[i][2].toFixed(3)}</td>`
+          + `<td class="br ${['ca', 'cb', 'cc'][i]}" id="min${i}">–</td>`
+          + (i === 1 ? '<td class="eq">→</td>' : '<td></td>')
+          + `<td class="${rowCls[i]}" id="${resId[i]}">–</td></tr>`;
+      }
+      h += '</table>';
+      mEl.clarke.innerHTML = h;
+      mEl.park.innerHTML = `<table>
+        <tr><td class="cd bl">d</td><td></td><td class="br" id="mc0">cosθ</td><td class="bl" id="ms0">sinθ</td>
+            <td class="br cal" id="mal2">–</td><td></td><td class="cd" id="md">–</td></tr>
+        <tr><td class="cq">q</td><td class="eq">=</td><td class="br" id="mc1">−sinθ</td><td class="bl" id="ms1">cosθ</td>
+            <td class="br cbe" id="mbe2">–</td><td class="eq">→</td><td class="cq" id="mq">–</td></tr></table>`;
+      mCells = ['min0', 'min1', 'min2', 'mal', 'mbe', 'mze', 'mc0', 'ms0', 'mc1', 'ms1', 'mal2', 'mbe2', 'md', 'mq']
+        .reduce((o, id) => (o[id] = document.getElementById(id), o), {});
+    }
+    buildMatrixDom();
+
+    let mTick = 0, mBuiltConv = params.convention;
+    function updateMatrix(a, b, c, t) {
+      if (!params.showMatrix || (mTick++ % 4)) return;
+      if (mBuiltConv !== params.convention) { mBuiltConv = params.convention; buildMatrixDom(); }
+      const f = x => (x >= 0 ? '+' : '') + x.toFixed(2);
+      mCells.min0.textContent = f(a); mCells.min1.textContent = f(b); mCells.min2.textContent = f(c);
+      mCells.mal.textContent = f(t.al); mCells.mbe.textContent = f(t.be); mCells.mze.textContent = f(t.ze);
+      const cf = Math.cos(thF), sf = Math.sin(thF);
+      mCells.mc0.textContent = f(cf); mCells.ms0.textContent = f(sf);
+      mCells.mc1.textContent = f(-sf); mCells.ms1.textContent = f(cf);
+      mCells.mal2.textContent = f(t.al); mCells.mbe2.textContent = f(t.be);
+      mCells.md.textContent = f(t.d); mCells.mq.textContent = f(t.q);
+    }
+
+    // ============================================================ tweens & camera
+    const tweens = [];
+    const smoothstep = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+
+    function tweenParam(key, to, dur = 0.85) {
+      const i = tweens.findIndex(t => t.key === key);
+      if (i >= 0) tweens.splice(i, 1);
+      tweens.push({ key, from: params[key], to, t: 0, dur });
+    }
+
+    function tweenParams(patch, dur) {
+      for (const k in patch) if (Math.abs(params[k] - patch[k]) > 1e-4) tweenParam(k, patch[k], dur);
+    }
+
+    let camTween = null;
+    function flyTo(pos, up, dur = 1.1) {
+      camTween = {
+        p0: camera.position.clone(), p1: pos.clone(),
+        u0: camera.up.clone(), u1: up.clone(), t: 0, dur,
+      };
+    }
+    controls.addEventListener('start', () => { camTween = null; }); // user always wins
+
+    const VIEWS = {
+      hero: { pos: new THREE.Vector3(4.1, -0.5, 2.3), up: new THREE.Vector3(0, 1, 0) },
+      zero: { pos: U0.clone().multiplyScalar(4.6), up: UB.clone() },
+      edge: { pos: UA.clone().multiplyScalar(4.9), up: U0.clone() },
+    };
+    function camPreset(which) { const v = VIEWS[which] || VIEWS.hero; flyTo(v.pos, v.up); }
+
+    // Park engage/release: ease worldAngle toward −θF along the shortest arc
+    let worldAngle = 0;
+
+    // ============================================================ events
+    let sagPending = false, sagRestoreAt = 0, sagPrev = null;
+
+    function evtJump() {
+      ph1 += Math.PI / 6;
+      markers.push({ th: th + ph1, label: '+30°' });
+    }
+
+    function evtSag() {
+      if (!sagPending) sagPrev = { A1: params.A1, A2: params.A2 };
+      tweenParams({ A1: Math.min(params.A1, 0.72), A2: Math.max(params.A2, 0.22) }, 0.12);
+      sagPending = true;
+      sagRestoreAt = th + ph1 + 6 * Math.PI; // 3 cycles
+      markers.push({ th: th + ph1, label: 'sag' });
+    }
+
+    function checkSag(ths) {
+      if (sagPending && ths >= sagRestoreAt) {
+        sagPending = false;
+        tweenParams(sagPrev, 0.3);
+        markers.push({ th: ths, label: 'clear' });
+      }
+    }
+
+    function snapFrame() {
+      thF = th + ph1;
+      pll.thHat = thF; pll.xInt = 0;
+    }
+
+    // ============================================================ PLL (SRF)
+    function pllStep(al, be, dt) {
+      // 4 fixed substeps for PI stability; normalized q error
+      const om = 2 * Math.PI * params.speed;
+      const wn = om * Math.max(params.pllBw, 0.01);
+      const Kp = 2 * 0.7 * wn, Ki = wn * wn;
+      const mag = Math.max(Math.hypot(al, be), 0.15);
+      const h = dt / 4;
+      for (let i = 0; i < 4; i++) {
+        const e = (-al * Math.sin(pll.thHat) + be * Math.cos(pll.thHat)) / mag;
+        pll.xInt += Ki * e * h;
+        pll.thHat += (om + Kp * e + pll.xInt) * h;
+      }
+    }
+
+    // ============================================================ guided tour
+    const RESET = { A1: 1, A2: 0, A0: 0, A3: 0, A5: 0, A7: 0 };
+    const TOUR = [
+      {
+        t: 'Three waveforms, one point',
+        c: 'i<sub>a</sub>, i<sub>b</sub>, i<sub>c</sub> are three numbers at every instant — so they are <b>one point in 3-D</b>. The coloured chain adds a·x̂ + b·ŷ + c·ẑ tip-to-tail; the white ball is their sum. The scope shows the same data unrolled in time.',
+        apply() { tweenParams(RESET); Object.assign(params, { showConstruction: true, showEpicycles: false, park: false, frameSrc: 'ideal' }); camPreset('hero'); },
+      },
+      {
+        t: 'A prison called a+b+c = 0',
+        c: 'With no zero-sequence the three values always <b>sum to zero</b> — the point can never leave this tilted plane. Three signals, but only two dimensions of freedom. You are looking at the disc edge-on: the orbit is flat.',
+        apply() { tweenParams(RESET); Object.assign(params, { showConstruction: false }); camPreset('edge'); },
+      },
+      {
+        t: 'Clarke is just a rename',
+        c: 'Look straight down the 0-axis: the a, b, c axes land <b>120° apart</b> — the classic space-vector diagram. α and β are simply orthogonal coordinates for the disc. No information moved; the axes got renamed.',
+        apply() { tweenParams(RESET); Object.assign(params, { showDrop: true }); camPreset('zero'); },
+      },
+      {
+        t: 'Park: ride the carousel',
+        c: 'Now rotate <b>with</b> the vector. The world counter-rotates, the vector freezes, and the abc axes spin backwards. A frozen vector means constant d and q — AC became DC because <b>the observer moved</b>, not the signal.',
+        apply() { tweenParams(RESET); Object.assign(params, { park: true, frameSrc: 'ideal' }); camPreset('zero'); },
+      },
+      {
+        t: 'Unbalance = a counter-rotating circle',
+        c: 'Negative sequence is a second vector spinning the <b>opposite way</b> (orange epicycle rolling on the blue circle). Circle → ellipse — and in the dq frame it becomes a <b>2ω wobble</b> in d and q: the ripple every controller fights during faults.',
+        apply() { tweenParams({ ...RESET, A2: 0.3 }); Object.assign(params, { park: false, showEpicycles: true }); camPreset('zero'); },
+      },
+      {
+        t: 'All roads lead to 6ω',
+        c: 'The 5th harmonic rotates at <b>−5ω</b>, the 7th at <b>+7ω</b>. Seen from the +ω frame both are exactly 6ω away — they fold onto the <b>same 6ω ripple</b> (the famous six-pulse torque ripple). The green dq-locus traces the rosette.',
+        apply() { tweenParams({ ...RESET, A5: 0.22, A7: 0.14 }); Object.assign(params, { park: true, showEpicycles: true, showLocus: true }); camPreset('zero'); },
+      },
+      {
+        t: 'Triplens escape through the floor',
+        c: '3rd-harmonic components are <b>identical in all three phases</b> — pure zero-sequence. The orbit in the plane does not change at all; the ball just vibrates along the purple 0-axis. αβ and dq never see it — and a delta winding traps it.',
+        apply() { tweenParams({ ...RESET, A3: 0.35 }); Object.assign(params, { park: false, showEpicycles: true, showDrop: true }); camPreset('hero'); },
+      },
+      {
+        t: 'But who tells you θ?',
+        c: 'A real converter must <b>estimate</b> the frame angle. An SRF-PLL is chasing the vector right now — a +30° phase jump was just fired: watch the frame slew, overshoot and re-lock (red arc = angle error ε<sub>θ</sub>). This is why PLLs exist.',
+        apply() {
+          tweenParams(RESET);
+          Object.assign(params, { park: true, frameSrc: 'pll', showEpicycles: false });
+          snapFrame(); camPreset('zero');
+          const my = tourIdx;
+          setTimeout(() => { if (tourIdx === my) { evtJump(); } }, 1900);
+        },
+      },
+    ];
+
+    let tourIdx = -1;
+    const tourEl = {
+      panel: document.getElementById('tour'), title: document.getElementById('tourTitle'),
+      step: document.getElementById('tourStep'), cap: document.getElementById('tourCap'),
+      dots: document.getElementById('tourDots'),
+    };
+
+    function showTour(i) {
+      tourIdx = i;
+      const ch = TOUR[i];
+      tourEl.panel.style.display = 'block';
+      document.getElementById('chips').style.display = 'none';
+      tourEl.title.textContent = ch.t;
+      tourEl.step.textContent = `scene ${i + 1} / ${TOUR.length}`;
+      tourEl.cap.innerHTML = ch.c;
+      tourEl.dots.innerHTML = TOUR.map((_, k) => k === i ? '<b>●</b>' : '●').join(' ');
+      document.getElementById('tourPrev').disabled = i === 0;
+      document.getElementById('tourNext').textContent = i === TOUR.length - 1 ? 'finish ✓' : 'next ▶';
+      ch.apply();
+      guiRefresh();
+      syncTransport();
+    }
+
+    function exitTour() {
+      tourIdx = -1;
+      tourEl.panel.style.display = 'none';
+      document.getElementById('chips').style.display = 'flex';
+      Object.assign(params, { frameSrc: 'ideal', showEpicycles: false, showConstruction: false });
+      guiRefresh();
+    }
+
+    document.getElementById('btnTour').onclick = () => showTour(0);
+    document.getElementById('tourPrev').onclick = () => { if (tourIdx > 0) showTour(tourIdx - 1); };
+    document.getElementById('tourNext').onclick = () => tourIdx < TOUR.length - 1 ? showTour(tourIdx + 1) : exitTour();
+    document.getElementById('tourExit').onclick = exitTour;
+
+    // ============================================================ scenario chips
+    const chipBtns = [...document.querySelectorAll('#chips button')];
+    chipBtns.forEach(btn => btn.addEventListener('click', () => {
+      chipBtns.forEach(b => b.classList.toggle('on', b === btn));
+      tweenParams(JSON.parse(btn.dataset.p));
+    }));
+
+    // ============================================================ HUD & transport
     const R = id => document.getElementById(id);
-    const rEls = { a: R('ra'), b: R('rb'), c: R('rc'), al: R('ral'), be: R('rbe'), ze: R('rze'), d: R('rd'), q: R('rq'), m: R('rm') };
-    const rdTheta = R('rdTheta');
+    const rEls = {
+      a: R('ra'), b: R('rb'), c: R('rc'), al: R('ral'), be: R('rbe'), ze: R('rze'),
+      d: R('rd'), q: R('rq'), m: R('rm'), nabc: R('rnabc'), nab0: R('rnab0'), err: R('rerr'),
+    };
+    const rdTheta = R('rdTheta'), rippleEl = R('ripple');
     const f2 = x => (x >= 0 ? '+' : '') + x.toFixed(2);
 
-    // ------------------------------------------------- camera presets
-    function camPreset(which) {
-      if (which === 'zero') {
-        camera.position.copy(U0).multiplyScalar(4.6);
-        camera.up.copy(UB);
-      } else {
-        camera.position.set(4.1, -0.5, 2.3);
-        camera.up.set(0, 1, 0);
-      }
-      controls.target.set(0, 0, 0);
-      controls.update();
+    function updateRipple() {
+      const parts = [];
+      if (params.A2 > 0.015) parts.push('2ω (neg-seq)');
+      if (params.A5 > 0.015 || params.A7 > 0.015) parts.push('6ω (5th & 7th fold together)');
+      if (params.A3 > 0.015 || params.A0 > 0.015) parts.push('0-axis only (triplen/zero — dq blind)');
+      rippleEl.textContent = 'dq ripple: ' + (parts.length ? parts.join(' + ') : 'none — pure DC');
     }
 
-    // ------------------------------------------------- GUI
-    const gui = new GUI({ title: 'Clarke / Park — controls' });
-    const fs = gui.addFolder('Signal content');
-    fs.add(params, 'A1', 0, 1.2, 0.01).name('positive seq A₁');
-    fs.add(params, 'A2', 0, 1.0, 0.01).name('negative seq A₂ (unbalance)');
-    fs.add(params, 'A0', 0, 1.0, 0.01).name('zero seq A₀');
-    fs.add(params, 'A5', 0, 0.6, 0.01).name('5th harmonic A₅');
-    fs.add(params, 'speed', 0.03, 1.0, 0.01).name('speed (cycles/s)');
-
-    const fv = gui.addFolder('Frames & views');
-    const parkCtrl = fv.add(params, 'park').name('Park (dq) frame view').onChange(syncParkBtn);
-    fv.add({ p: () => camPreset('zero') }, 'p').name('▶ look down 0-axis');
-    fv.add({ p: () => camPreset('hero') }, 'p').name('▶ hero view');
-
-    const fd = gui.addFolder('Display');
-    fd.add(params, 'showPlane').name('αβ plane');
-    fd.add(params, 'showTrail').name('trail');
-    fd.add(params, 'showDQ').name('dq axes');
-    fd.add(params, 'showDrop').name('projection & drop line');
-    fd.close();
-
-    // ------------------------------------------------- transport
-    const btnPlay = document.getElementById('btnPlay');
-    const btnPark = document.getElementById('btnPark');
+    const btnPlay = R('btnPlay'), btnPark = R('btnPark');
     btnPlay.onclick = () => {
       params.paused = !params.paused;
       btnPlay.textContent = params.paused ? '▶ play' : '⏸ pause';
     };
-    function syncParkBtn() { btnPark.classList.toggle('on', params.park); }
-    btnPark.onclick = () => { params.park = !params.park; parkCtrl.updateDisplay(); syncParkBtn(); };
+    btnPark.onclick = () => { params.park = !params.park; guiRefresh(); syncTransport(); };
+    R('btnJump').onclick = evtJump;
+    R('btnSag').onclick = evtSag;
+    function syncTransport() { btnPark.classList.toggle('on', params.park); }
 
-    // ------------------------------------------------- main loop
-    let th = 0;
-    const clock = new THREE.Clock();
-    const P = new THREE.Vector3(), Pproj = new THREE.Vector3(), tmp = new THREE.Vector3();
+    // ============================================================ GUI
+    const gui = new GUI({ title: 'Clarke / Park — controls' });
 
-    function tick() {
+    const fs = gui.addFolder('Signal content');
+    fs.add(params, 'A1', 0, 1.2, 0.01).name('positive seq A₁');
+    fs.add(params, 'A2', 0, 1.0, 0.01).name('negative seq A₂ (unbalance)');
+    fs.add(params, 'A0', 0, 1.0, 0.01).name('zero seq A₀');
+    fs.add(params, 'A3', 0, 0.6, 0.01).name('3rd — triplen → 0-axis');
+    fs.add(params, 'A5', 0, 0.6, 0.01).name('5th (neg) → 6ω in dq');
+    fs.add(params, 'A7', 0, 0.6, 0.01).name('7th (pos) → 6ω in dq');
+    fs.add(params, 'speed', 0.03, 1.0, 0.01).name('speed (cycles/s)');
+
+    const ff = gui.addFolder('dq frame');
+    ff.add(params, 'park').name('Park view — ride the frame').onChange(syncTransport).listen();
+    const srcCtrl = ff.add(params, 'frameSrc', {
+      'locked ω (open-loop)': 'ideal', 'detuned ω (drifts!)': 'detuned', 'SRF-PLL estimate': 'pll',
+    }).name('frame angle source');
+    const detCtrl = ff.add(params, 'detune', -5, 5, 0.1).name('detune (%)');
+    const bwCtrl = ff.add(params, 'pllBw', 0.03, 0.6, 0.01).name('PLL bandwidth (×f)');
+    ff.add({ s: snapFrame }, 's').name('⟲ snap frame to vector');
+    ff.add(params, 'convention', { 'amplitude-invariant (2/3)': 'amp', 'power-invariant √(2/3)': 'pow' })
+      .name('scaling convention').onChange(buildMatrixDom);
+    function syncFrameCtrls() {
+      detCtrl.show(params.frameSrc === 'detuned');
+      bwCtrl.show(params.frameSrc === 'pll');
+      if (params.frameSrc === 'pll') { pll.thHat = thF; pll.xInt = 0; }
+    }
+    srcCtrl.onChange(syncFrameCtrls);
+    syncFrameCtrls();
+
+    const fe = gui.addFolder('Grid events');
+    fe.add({ j: evtJump }, 'j').name('⚡ phase jump +30°');
+    fe.add({ s: evtSag }, 's').name('⚡ unbalanced sag (3 cycles)');
+    fe.add({ c: () => { markers.length = 0; } }, 'c').name('clear markers');
+
+    const fd = gui.addFolder('Display');
+    fd.add(params, 'showConstruction').name('tip-to-tail construction').listen();
+    fd.add(params, 'showEpicycles').name('sequence epicycles').listen();
+    fd.add(params, 'showOrbit').name('orbit preview (dashed)');
+    fd.add(params, 'showLocus').name('dq-frame locus (green)').listen();
+    fd.add(params, 'showTrail').name('abc comet trail');
+    fd.add(params, 'showPlane').name('αβ plane');
+    fd.add(params, 'showDQ').name('dq axes');
+    fd.add(params, 'showDrop').name('projection & drop line').listen();
+    fd.add(params, 'showMatrix').name('matrix panel (live algebra)')
+      .onChange(v => { document.getElementById('matrix').style.display = v ? 'block' : 'none'; });
+    fd.add(params, 'bloom').name('bloom').onChange(v => { bloomPass.enabled = v; });
+    fd.add(params, 'glow', 0, 1.2, 0.02).name('glow strength').onChange(v => { bloomPass.strength = v; });
+    fd.close();
+
+    const fv = gui.addFolder('Views');
+    fv.add({ p: () => camPreset('hero') }, 'p').name('▶ hero view  (1)');
+    fv.add({ p: () => camPreset('zero') }, 'p').name('▶ look down 0-axis  (2)');
+    fv.add({ p: () => camPreset('edge') }, 'p').name('▶ plane edge-on  (3)');
+
+    function guiRefresh() { gui.controllersRecursive().forEach(c => c.updateDisplay()); syncFrameCtrls(); }
+
+    // ============================================================ keyboard
+    addEventListener('keydown', e => {
+      if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      switch (e.key) {
+        case ' ': e.preventDefault(); btnPlay.onclick(); break;
+        case 'p': case 'P': btnPark.onclick(); break;
+        case 'e': case 'E': params.showEpicycles = !params.showEpicycles; guiRefresh(); break;
+        case 'c': case 'C': params.showConstruction = !params.showConstruction; guiRefresh(); break;
+        case '1': camPreset('hero'); break;
+        case '2': camPreset('zero'); break;
+        case '3': camPreset('edge'); break;
+        case 'ArrowRight':
+          if (tourIdx >= 0) document.getElementById('tourNext').onclick();
+          else if (params.paused) stepTheta(Math.PI / 90);
+          break;
+        case 'ArrowLeft':
+          if (tourIdx >= 0) document.getElementById('tourPrev').onclick();
+          else if (params.paused) stepTheta(-Math.PI / 90);
+          break;
+        case 'Escape': if (tourIdx >= 0) exitTour(); break;
+      }
+    });
+
+    let forceSample = false;
+    function stepTheta(dth) {
+      const om = 2 * Math.PI * params.speed;
+      advance(dth / om);
+      forceSample = true;
+    }
+
+    // ============================================================ simulation step
+    function advance(dt) {
+      const om = 2 * Math.PI * params.speed;
+      th += om * dt;
+      const ths = th + ph1;
+
+      if (params.frameSrc === 'ideal') thF += om * dt;
+      else if (params.frameSrc === 'detuned') thF += om * (1 + params.detune / 100) * dt;
+      else {
+        // PLL uses the measured αβ vector (geometric, convention-independent scale is fine)
+        const a = phaseVal(0, ths), b = phaseVal(1, ths), c = phaseVal(2, ths);
+        const al = (2 * a - b - c) / 3, be = (b - c) / Math.sqrt(3);
+        if (dt > 0) pllStep(al, be, dt);
+        thF = pll.thHat;
+      }
+      checkSag(ths);
+    }
+
+    // ============================================================ camera presets self-view
+    // (declared above; nothing else needed here)
+
+    // ============================================================ main loop
+    const P = new THREE.Vector3(), Pproj = new THREE.Vector3(), tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3();
+    const dDir = new THREE.Vector3(), qDir = new THREE.Vector3();
+    let lastNow = performance.now();
+    let orbitCheck = 0;
+
+    function tick(now) {
       requestAnimationFrame(tick);
-      const dt = Math.min(clock.getDelta(), 0.05);
-      if (!params.paused) th += 2 * Math.PI * params.speed * dt;
+      const dt = Math.min((now - lastNow) / 1000 || 0, 0.05);
+      lastNow = now;
 
-      // signal sample
-      const a = phaseVal(0, th), b = phaseVal(1, th), c = phaseVal(2, th);
-      const { al, be, ze, d, q } = transforms(a, b, c, th);
+      let sampled = forceSample;
+      forceSample = false;
+      if (!params.paused) { advance(dt); sampled = true; }
 
-      // geometry: the point in abc space and its plane projection
+      // -------- process tweens
+      if (tweens.length) {
+        for (let i = tweens.length - 1; i >= 0; i--) {
+          const t = tweens[i];
+          t.t += dt / t.dur;
+          params[t.key] = t.t >= 1 ? t.to : t.from + (t.to - t.from) * smoothstep(t.t);
+          if (t.t >= 1) tweens.splice(i, 1);
+        }
+        guiRefresh();
+      }
+      if (camTween) {
+        const t = camTween;
+        t.t += dt / t.dur;
+        const s = smoothstep(t.t);
+        camera.position.lerpVectors(t.p0, t.p1, s);
+        camera.up.lerpVectors(t.u0, t.u1, s).normalize();
+        if (t.t >= 1) camTween = null;
+      }
+
+      // -------- signal sample
+      const ths = th + ph1;
+      const a = phaseVal(0, ths), b = phaseVal(1, ths), c = phaseVal(2, ths);
+      const t = transforms(a, b, c, thF);
+
       P.set(a, b, c);
       Pproj.copy(P).addScaledVector(U0, -P.dot(U0));
 
-      const len = Math.max(P.length(), 1e-4);
-      vecArrow.setDirection(tmp.copy(P).normalize());
-      vecArrow.setLength(len, Math.min(0.09, len * 0.5), 0.045);
-      ball.position.copy(P);
+      // frame unit vectors (at θF)
+      dDir.copy(UA).multiplyScalar(Math.cos(thF)).addScaledVector(UB, Math.sin(thF));
+      qDir.copy(UA).multiplyScalar(-Math.sin(thF)).addScaledVector(UB, Math.cos(thF));
 
-      // projection + drop line
+      // -------- actors
+      vecArrow.userData.set(tmp.set(0, 0, 0), P);
+      ball.position.copy(P);
+      ballHalo.position.copy(P);
+
       dropGrp.visible = params.showDrop;
       if (params.showDrop) {
         projDot.position.copy(Pproj);
@@ -504,64 +1308,156 @@
         pp.setXYZ(0, 0, 0, 0); pp.setXYZ(1, Pproj.x, Pproj.y, Pproj.z); pp.needsUpdate = true;
       }
 
-      // dq frame axes rotate at +θ in the plane
       dqGrp.visible = params.showDQ;
       if (params.showDQ) {
-        const dDir = tmp.copy(UA).multiplyScalar(Math.cos(th)).addScaledVector(UB, Math.sin(th)).normalize();
-        dArrow.setDirection(dDir);
-        labD.position.copy(dDir).multiplyScalar(1.18);
-        const qDir = tmp.copy(UA).multiplyScalar(-Math.sin(th)).addScaledVector(UB, Math.cos(th)).normalize();
-        qArrow.setDirection(qDir);
-        labQ.position.copy(qDir).multiplyScalar(1.18);
+        dArrow.userData.set(tmp.set(0, 0, 0), tmp2.copy(dDir).multiplyScalar(1.05));
+        qArrow.userData.set(tmp.set(0, 0, 0), tmp2.copy(qDir).multiplyScalar(1.05));
+        labD.position.copy(dDir).multiplyScalar(1.2);
+        labQ.position.copy(qDir).multiplyScalar(1.2);
       }
+
+      // frame-error wedge (red arc from frame d̂ to the signal's pos-seq angle)
+      const eps = wrapPi(ths - thF);
+      if (Math.abs(eps) > 0.012 && params.frameSrc !== 'ideal' || Math.abs(eps) > 0.012 && Math.abs(ph1) > 1e-6) {
+        errWedge.visible = true;
+        const pos0 = errWedge.geometry.attributes.position, rW = 0.8;
+        for (let i = 0; i <= 32; i++) {
+          const f = thF + eps * (i / 32);
+          tmp.copy(UA).multiplyScalar(Math.cos(f) * rW).addScaledVector(UB, Math.sin(f) * rW);
+          pos0.setXYZ(i, tmp.x, tmp.y, tmp.z);
+        }
+        pos0.needsUpdate = true;
+      } else errWedge.visible = false;
 
       planeGrp.visible = params.showPlane;
 
-      // trail
-      trail.visible = params.showTrail;
-      if (!params.paused && params.showTrail) {
-        trailPts.push(P.clone());
-        if (trailPts.length > TRAIL_N) trailPts.shift();
-        const n = trailPts.length;
-        for (let i = 0; i < n; i++) {
-          const p = trailPts[i];
-          trailPos[i * 3] = p.x; trailPos[i * 3 + 1] = p.y; trailPos[i * 3 + 2] = p.z;
-          cTmp.lerpColors(cTail, cHead, n < 2 ? 1 : i / (n - 1));
-          trailCol[i * 3] = cTmp.r; trailCol[i * 3 + 1] = cTmp.g; trailCol[i * 3 + 2] = cTmp.b;
-        }
-        trailGeo.attributes.position.needsUpdate = true;
-        trailGeo.attributes.color.needsUpdate = true;
-        trailGeo.setDrawRange(0, n);
+      // -------- tip-to-tail construction
+      consGrp.visible = params.showConstruction;
+      if (params.showConstruction) {
+        consA.userData.set(tmp.set(0, 0, 0), tmp2.set(a, 0, 0));
+        consB.userData.set(tmp.set(a, 0, 0), tmp2.set(0, b, 0));
+        consC.userData.set(tmp.set(a, b, 0), tmp2.set(0, 0, c));
       }
 
-      // Park view: rotate the whole world by −θ about the 0-axis → dq frame appears frozen
-      if (params.park) world.quaternion.setFromAxisAngle(U0, -th);
-      else world.quaternion.identity();
+      // -------- sequence epicycles (chained; exact decomposition of P)
+      epiGrp.visible = params.showEpicycles;
+      if (params.showEpicycles) {
+        const base = tmp.set(0, 0, 0);
+        const setStage = (arrow, ring, r, cs, sn, active) => {
+          if (!active) { arrow.visible = false; if (ring) ring.visible = false; return; }
+          tmp2.copy(UA).multiplyScalar(r * cs).addScaledVector(UB, r * sn);
+          arrow.userData.set(base, tmp2);
+          if (ring) {
+            ring.visible = true;
+            ring.position.copy(base);
+            ring.scale.setScalar(Math.max(r, 1e-4));
+          }
+          base.add(tmp2);
+        };
+        setStage(epiPos, ringPos, params.A1 * S32, Math.cos(ths), Math.sin(ths), params.A1 > 0.02);
+        setStage(epiNeg, ringNeg, params.A2 * S32, Math.cos(ths), -Math.sin(ths), params.A2 > 0.02);
+        setStage(epi5, ring5, params.A5 * S32, Math.cos(5 * ths), -Math.sin(5 * ths), params.A5 > 0.02);
+        setStage(epi7, ring7, params.A7 * S32, Math.cos(7 * ths), Math.sin(7 * ths), params.A7 > 0.02);
+        // zero-sequence leg — straight up the 0-axis to the ball
+        const zLen = P.dot(U0) - base.dot(U0);
+        if (Math.abs(zLen) > 0.02) {
+          epiZ.visible = true;
+          epiZ.userData.set(base, tmp2.copy(U0).multiplyScalar(zLen));
+        } else epiZ.visible = false;
+      }
 
-      // readouts + scope
+      // -------- orbit preview (rebuild only when the signal recipe changes)
+      orbit.line.visible = params.showOrbit;
+      if (params.showOrbit && !(orbitCheck++ % 3)) {
+        const sig = `${params.A1.toFixed(3)}|${params.A2.toFixed(3)}|${params.A0.toFixed(3)}|${params.A3.toFixed(3)}|${params.A5.toFixed(3)}|${params.A7.toFixed(3)}`;
+        if (sig !== orbitSig) { orbitSig = sig; rebuildOrbit(); }
+      }
+
+      // -------- trails
+      trail.line.visible = params.showTrail;
+      if (sampled && params.showTrail) {
+        trailLen = pushRing(trailPts, trailLen, P.x, P.y, P.z);
+        fadeColors(trailCols, trailLen, cHead, cTail);
+        trail.write(trailPts, trailCols, trailLen);
+      }
+
+      // dq locus: geometric frame coords (power-invariant = the actual rotation)
+      dqSpace.quaternion.setFromAxisAngle(U0, thF);
+      locus.line.visible = params.showLocus;
+      if (sampled && params.showLocus) {
+        const dg = P.dot(dDir), qg = P.dot(qDir), zg = P.dot(U0);
+        locusLen = pushRing(locusHist, locusLen, dg, qg, zg);
+        for (let i = 0; i < locusLen; i++) {
+          const dgi = locusHist[i * 3], qgi = locusHist[i * 3 + 1], zgi = locusHist[i * 3 + 2];
+          // local coords inside dqSpace: ûα plays d̂, ûβ plays q̂
+          tmp.copy(UA).multiplyScalar(dgi).addScaledVector(UB, qgi).addScaledVector(U0, zgi);
+          locusPts[i * 3] = tmp.x; locusPts[i * 3 + 1] = tmp.y; locusPts[i * 3 + 2] = tmp.z;
+        }
+        fadeColors(locusCols, locusLen, cLHead, cLTail);
+        locus.write(locusPts, locusCols, locusLen);
+      }
+
+      // -------- Park blend: ease worldAngle toward −θF (shortest arc), or back to 0
+      {
+        const tgt = params.park ? -thF : 0;
+        const dphi = Math.atan2(Math.sin(tgt - worldAngle), Math.cos(tgt - worldAngle));
+        worldAngle += dphi * Math.min(1, dt * 6);
+        world.quaternion.setFromAxisAngle(U0, worldAngle);
+      }
+
+      // -------- history & panels
+      if (sampled) pushHist(ths, a, b, c, t.d, t.q, P);
+
       rEls.a.textContent = f2(a); rEls.b.textContent = f2(b); rEls.c.textContent = f2(c);
-      rEls.al.textContent = f2(al); rEls.be.textContent = f2(be); rEls.ze.textContent = f2(ze);
-      rEls.d.textContent = f2(d); rEls.q.textContent = f2(q);
-      rEls.m.textContent = Math.hypot(al, be).toFixed(2);
-      rdTheta.textContent = 'θ = ' + (((th * 180 / Math.PI) % 360 + 360) % 360).toFixed(0) + '°';
+      rEls.al.textContent = f2(t.al); rEls.be.textContent = f2(t.be); rEls.ze.textContent = f2(t.ze);
+      rEls.d.textContent = f2(t.d); rEls.q.textContent = f2(t.q);
+      rEls.m.textContent = Math.hypot(t.al, t.be).toFixed(2);
+      rEls.nabc.textContent = P.length().toFixed(2);
+      rEls.nab0.textContent = Math.hypot(t.al, t.be, t.ze).toFixed(2);
+      rEls.err.textContent = (eps * 180 / Math.PI).toFixed(1) + '°';
+      rdTheta.textContent = 'θ = ' + (((ths * 180 / Math.PI) % 360 + 360) % 360).toFixed(0) + '°';
+      updateRipple();
+      updateMatrix(a, b, c, t);
+      drawScope(ths);
 
-      if (!params.paused) pushHist(a, b, c, d, q);
-      drawScope();
+      // slow dust drift for life
+      dust.setRotationFromAxisAngle(U0, now * 0.00002);
 
       controls.update();
-      renderer.render(scene, camera);
+      composer.render();
     }
 
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(innerWidth, innerHeight);
+      composer.setSize(innerWidth, innerHeight);
+      bloomPass.setSize(innerWidth, innerHeight);
+      for (const m of fatMats) m.resolution.set(innerWidth, innerHeight);
+      sizeScope();
     });
 
-    tick();
+    rebuildOrbit();
+    requestAnimationFrame(t => { lastNow = t; tick(t); });
 
-    // console / test handle
-    window.__cp = { params, gui, camPreset, transforms, phaseVal, get theta() { return th; } };
+    // ============================================================ test handle
+    window.__cp = {
+      params, gui, camPreset, transforms, phaseVal, pll, evtJump, evtSag, snapFrame,
+      showTour, exitTour,
+      get theta() { return th + ph1; },
+      get thetaFrame() { return thF; },
+      get tourIdx() { return tourIdx; },
+      // consistency check: epicycle chain must land exactly on the ball
+      selftest() {
+        const ths = th + ph1;
+        const chain = new THREE.Vector3()
+          .addScaledVector(UA, S32 * (params.A1 * Math.cos(ths) + params.A2 * Math.cos(ths) + params.A5 * Math.cos(5 * ths) + params.A7 * Math.cos(7 * ths)))
+          .addScaledVector(UB, S32 * (params.A1 * Math.sin(ths) - params.A2 * Math.sin(ths) - params.A5 * Math.sin(5 * ths) + params.A7 * Math.sin(7 * ths)))
+          .addScaledVector(U0, S3 * (params.A0 * Math.cos(ths) + params.A3 * Math.cos(3 * ths)));
+        const Pn = new THREE.Vector3(phaseVal(0, ths), phaseVal(1, ths), phaseVal(2, ths));
+        return { chainError: chain.distanceTo(Pn), ok: chain.distanceTo(Pn) < 1e-9 };
+      },
+    };
   </script>
 </body>
 
