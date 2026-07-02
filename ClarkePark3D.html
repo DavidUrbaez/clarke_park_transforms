@@ -24,9 +24,12 @@
       --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       height: 100%;
       overflow: hidden;
@@ -35,8 +38,14 @@
       font-family: var(--font);
     }
 
-    #app { position: fixed; inset: 0; }
-    canvas { display: block; }
+    #app {
+      position: fixed;
+      inset: 0;
+    }
+
+    canvas {
+      display: block;
+    }
 
     .panel {
       position: fixed;
@@ -58,10 +67,24 @@
       font-family: var(--font);
     }
 
-    button:hover { border-color: var(--accent); color: #fff; }
-    button.on { border-color: var(--accent); background: #1d2d55; color: #fff; }
-    button.zap { color: var(--warn); }
-    button.zap:hover { border-color: var(--warn); }
+    button:hover {
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button.on {
+      border-color: var(--accent);
+      background: #1d2d55;
+      color: #fff;
+    }
+
+    button.zap {
+      color: var(--warn);
+    }
+
+    button.zap:hover {
+      border-color: var(--warn);
+    }
 
     /* ------------- HUD ------------- */
     #hud {
@@ -71,7 +94,11 @@
       max-width: 352px;
     }
 
-    #hud h1 { font-size: 14px; margin: 0 0 4px; font-weight: 650; }
+    #hud h1 {
+      font-size: 14px;
+      margin: 0 0 4px;
+      font-weight: 650;
+    }
 
     #hud .cap {
       font-size: 11.5px;
@@ -80,7 +107,10 @@
       margin: 5px 0 8px;
     }
 
-    #hud .cap b { color: var(--ink); font-weight: 600; }
+    #hud .cap b {
+      color: var(--ink);
+      font-weight: 600;
+    }
 
     #hud table {
       width: 100%;
@@ -89,9 +119,20 @@
       font-size: 11.5px;
     }
 
-    #hud td { padding: 1.5px 4px; }
-    #hud td.k { color: var(--ink-dim); white-space: nowrap; }
-    #hud td.v { text-align: right; color: #bcd2ff; min-width: 50px; }
+    #hud td {
+      padding: 1.5px 4px;
+    }
+
+    #hud td.k {
+      color: var(--ink-dim);
+      white-space: nowrap;
+    }
+
+    #hud td.v {
+      text-align: right;
+      color: #bcd2ff;
+      min-width: 50px;
+    }
 
     #ripple {
       margin-top: 7px;
@@ -103,7 +144,11 @@
       line-height: 1.4;
     }
 
-    #btnTour { margin: 3px 0 8px; width: 100%; font-weight: 600; }
+    #btnTour {
+      margin: 3px 0 8px;
+      width: 100%;
+      font-weight: 600;
+    }
 
     .sw {
       display: inline-block;
@@ -129,8 +174,14 @@
       justify-content: space-between;
     }
 
-    #scope .ti span { color: var(--ink-dim); }
-    #scope canvas { border-radius: 6px; cursor: crosshair; }
+    #scope .ti span {
+      color: var(--ink-dim);
+    }
+
+    #scope canvas {
+      border-radius: 6px;
+      cursor: crosshair;
+    }
 
     /* ------------- matrix panel ------------- */
     #matrix {
@@ -142,22 +193,75 @@
       display: none;
     }
 
-    #matrix .mt { font-size: 11px; color: var(--ink); font-family: var(--font); margin-bottom: 6px; }
-    #matrix .mt span { color: var(--ink-dim); }
-    #matrix table { border-collapse: collapse; }
-    #matrix td { padding: 1px 5px; text-align: right; color: var(--ink-dim); }
-    #matrix td.br { border-left: 1.5px solid var(--ink-dim); }
-    #matrix td.bl { border-right: 1.5px solid var(--ink-dim); }
-    #matrix .ca { color: var(--warn); }
-    #matrix .cb { color: var(--cold); }
-    #matrix .cc { color: var(--hot); }
-    #matrix .cal { color: #dce6ff; }
-    #matrix .cbe { color: #8fa3cc; }
-    #matrix .cze { color: var(--zero); }
-    #matrix .cd { color: var(--accent); }
-    #matrix .cq { color: var(--qgreen); }
-    #matrix .eq { color: var(--ink); padding: 0 7px; }
-    #matrix .row2 { margin-top: 8px; }
+    #matrix .mt {
+      font-size: 11px;
+      color: var(--ink);
+      font-family: var(--font);
+      margin-bottom: 6px;
+    }
+
+    #matrix .mt span {
+      color: var(--ink-dim);
+    }
+
+    #matrix table {
+      border-collapse: collapse;
+    }
+
+    #matrix td {
+      padding: 1px 5px;
+      text-align: right;
+      color: var(--ink-dim);
+    }
+
+    #matrix td.br {
+      border-left: 1.5px solid var(--ink-dim);
+    }
+
+    #matrix td.bl {
+      border-right: 1.5px solid var(--ink-dim);
+    }
+
+    #matrix .ca {
+      color: var(--warn);
+    }
+
+    #matrix .cb {
+      color: var(--cold);
+    }
+
+    #matrix .cc {
+      color: var(--hot);
+    }
+
+    #matrix .cal {
+      color: #dce6ff;
+    }
+
+    #matrix .cbe {
+      color: #8fa3cc;
+    }
+
+    #matrix .cze {
+      color: var(--zero);
+    }
+
+    #matrix .cd {
+      color: var(--accent);
+    }
+
+    #matrix .cq {
+      color: var(--qgreen);
+    }
+
+    #matrix .eq {
+      color: var(--ink);
+      padding: 0 7px;
+    }
+
+    #matrix .row2 {
+      margin-top: 8px;
+    }
 
     /* ------------- scenario chips ------------- */
     #chips {
@@ -169,7 +273,11 @@
       padding: 7px 10px;
     }
 
-    #chips button { padding: 4px 10px; font-size: 11.5px; border-radius: 999px; }
+    #chips button {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      border-radius: 999px;
+    }
 
     /* ------------- guided tour ------------- */
     #tour {
@@ -182,8 +290,17 @@
       display: none;
     }
 
-    #tour .tt { font-size: 13px; font-weight: 650; margin-bottom: 4px; }
-    #tour .tt small { color: var(--ink-dim); font-weight: 400; margin-left: 8px; }
+    #tour .tt {
+      font-size: 13px;
+      font-weight: 650;
+      margin-bottom: 4px;
+    }
+
+    #tour .tt small {
+      color: var(--ink-dim);
+      font-weight: 400;
+      margin-left: 8px;
+    }
 
     #tour .tc {
       font-size: 11.8px;
@@ -192,7 +309,9 @@
       min-height: 52px;
     }
 
-    #tour .tc b { color: var(--ink); }
+    #tour .tc b {
+      color: var(--ink);
+    }
 
     #tour .nav {
       display: flex;
@@ -201,9 +320,21 @@
       margin-top: 8px;
     }
 
-    #tour .dots { flex: 1; text-align: center; letter-spacing: 4px; font-size: 13px; color: #2b3450; }
-    #tour .dots b { color: var(--accent); }
-    #tour .x { margin-left: auto; }
+    #tour .dots {
+      flex: 1;
+      text-align: center;
+      letter-spacing: 4px;
+      font-size: 13px;
+      color: #2b3450;
+    }
+
+    #tour .dots b {
+      color: var(--accent);
+    }
+
+    #tour .x {
+      margin-left: auto;
+    }
 
     /* ------------- transport ------------- */
     #transport {
@@ -214,6 +345,12 @@
       align-items: center;
       gap: 9px;
       padding: 9px 14px;
+    }
+
+    #transport input[type=range] {
+      width: 150px;
+      accent-color: var(--accent);
+      cursor: pointer;
     }
 
     #transport .rd {
@@ -231,12 +368,25 @@
       --title-background-color: #101a33;
     }
 
-    @media (max-width: 1120px) { #matrix { display: none !important; } }
+    @media (max-width: 1120px) {
+      #matrix {
+        display: none !important;
+      }
+    }
 
     @media (max-width: 900px) {
-      #hud { max-width: 272px; }
-      #scope, #chips { display: none; }
-      #tour { bottom: 66px; }
+      #hud {
+        max-width: 272px;
+      }
+
+      #scope,
+      #chips {
+        display: none;
+      }
+
+      #tour {
+        bottom: 66px;
+      }
     }
   </style>
 </head>
@@ -255,24 +405,36 @@
     <button id="btnTour">▶ start the guided tour&nbsp;&nbsp;<small>(9 scenes)</small></button>
     <table>
       <tr>
-        <td class="k"><span class="sw" style="background:var(--warn)"></span>i_a</td><td class="v" id="ra">–</td>
-        <td class="k"><span class="sw" style="background:var(--cold)"></span>i_b</td><td class="v" id="rb">–</td>
-        <td class="k"><span class="sw" style="background:var(--hot)"></span>i_c</td><td class="v" id="rc">–</td>
+        <td class="k"><span class="sw" style="background:var(--warn)"></span>i_a</td>
+        <td class="v" id="ra">–</td>
+        <td class="k"><span class="sw" style="background:var(--cold)"></span>i_b</td>
+        <td class="v" id="rb">–</td>
+        <td class="k"><span class="sw" style="background:var(--hot)"></span>i_c</td>
+        <td class="v" id="rc">–</td>
       </tr>
       <tr>
-        <td class="k">α</td><td class="v" id="ral">–</td>
-        <td class="k">β</td><td class="v" id="rbe">–</td>
-        <td class="k"><span class="sw" style="background:var(--zero)"></span>0</td><td class="v" id="rze">–</td>
+        <td class="k">α</td>
+        <td class="v" id="ral">–</td>
+        <td class="k">β</td>
+        <td class="v" id="rbe">–</td>
+        <td class="k"><span class="sw" style="background:var(--zero)"></span>0</td>
+        <td class="v" id="rze">–</td>
       </tr>
       <tr>
-        <td class="k"><span class="sw" style="background:var(--accent)"></span>d</td><td class="v" id="rd">–</td>
-        <td class="k"><span class="sw" style="background:var(--qgreen)"></span>q</td><td class="v" id="rq">–</td>
-        <td class="k">|s&#8407;|</td><td class="v" id="rm">–</td>
+        <td class="k"><span class="sw" style="background:var(--accent)"></span>d</td>
+        <td class="v" id="rd">–</td>
+        <td class="k"><span class="sw" style="background:var(--qgreen)"></span>q</td>
+        <td class="v" id="rq">–</td>
+        <td class="k">|s&#8407;|</td>
+        <td class="v" id="rm">–</td>
       </tr>
       <tr>
-        <td class="k">‖abc‖</td><td class="v" id="rnabc">–</td>
-        <td class="k">‖αβ0‖</td><td class="v" id="rnab0">–</td>
-        <td class="k">ε<sub>θ</sub></td><td class="v" id="rerr">–</td>
+        <td class="k">‖abc‖</td>
+        <td class="v" id="rnabc">–</td>
+        <td class="k">‖αβ0‖</td>
+        <td class="v" id="rnab0">–</td>
+        <td class="k">ε<sub>θ</sub></td>
+        <td class="v" id="rerr">–</td>
       </tr>
     </table>
     <div id="ripple">dq ripple: none — pure DC</div>
@@ -280,7 +442,8 @@
 
   <!-- ================= scope ================= -->
   <div id="scope" class="panel">
-    <div class="ti"><span id="scopeTitle">waveforms</span><span>abc solid · d&amp;q dashed · hover to inspect</span></div>
+    <div class="ti"><span id="scopeTitle">waveforms</span><span>abc solid · d&amp;q dashed · hover to inspect</span>
+    </div>
     <canvas id="scopeCv"></canvas>
   </div>
 
@@ -294,9 +457,12 @@
   <!-- ================= scenario chips ================= -->
   <div id="chips" class="panel">
     <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0,"A5":0,"A7":0}' class="on">Balanced</button>
-    <button data-p='{"A1":0.8,"A2":0.25,"A0":0,"A3":0,"A5":0,"A7":0}' title="what an unbalanced fault injects">Unbalanced sag</button>
-    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0,"A5":0.2,"A7":0.14}' title="6-pulse rectifier flavour: 5th + 7th">Rectifier harmonics</button>
-    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0.35,"A5":0,"A7":0}' title="triplen = pure zero-sequence">Triplen 3rd</button>
+    <button data-p='{"A1":0.8,"A2":0.25,"A0":0,"A3":0,"A5":0,"A7":0}'
+      title="what an unbalanced fault injects">Unbalanced sag</button>
+    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0,"A5":0.2,"A7":0.14}'
+      title="6-pulse rectifier flavour: 5th + 7th">Rectifier harmonics</button>
+    <button data-p='{"A1":1,"A2":0,"A0":0,"A3":0.35,"A5":0,"A7":0}' title="triplen = pure zero-sequence">Triplen
+      3rd</button>
     <button data-p='{"A1":1,"A2":0.18,"A0":0.25,"A3":0,"A5":0.18,"A7":0.1}'>Everything</button>
   </div>
 
@@ -318,6 +484,8 @@
     <button id="btnPark" title="P — rotate the world with the dq frame">Park frame</button>
     <button id="btnJump" class="zap" title="instant +30° phase jump on the signal">⚡ +30° jump</button>
     <button id="btnSag" class="zap" title="unbalanced voltage sag for 3 cycles">⚡ sag 3 cyc</button>
+    <input type="range" id="thSlide" min="0" max="360" step="1" value="0"
+      title="scrub the electrical angle θ (pauses playback)" />
     <div class="rd" id="rdTheta">θ = 0°</div>
   </div>
 
@@ -361,16 +529,18 @@
     const params = {
       // signal content
       A1: 1.0, A2: 0.0, A0: 0.0, A3: 0.0, A5: 0.0, A7: 0.0,
-      speed: 0.22,             // electrical cycles per second (visual slow motion)
+      speed: 0.05,             // electrical cycles per second (visual slow motion)
       // dq frame
       park: false,
       frameSrc: 'ideal',       // ideal (open-loop ω) | detuned | pll
       detune: 2.0,             // % frequency error when frameSrc = detuned
       pllBw: 0.15,             // PLL bandwidth as a fraction of line frequency
       convention: 'amp',       // amp | pow  (readouts & matrix only; geometry is invariant)
+      autoRotate: false,       // gentle orbit of the camera around the scene
       // display
       showPlane: true, showTrail: true, showLocus: true, showDQ: true,
       showDrop: true, showConstruction: false, showEpicycles: false, showCage: true,
+      showZeroAxis: true, showAlphaBeta: true,
       showOrbit: true, showMatrix: false,
       bloom: true, glow: 0.14,
       paused: false,
@@ -419,7 +589,7 @@
     // =================================================================== renderer
     const app = document.getElementById('app');
     const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
-    const PR = Math.min(devicePixelRatio, 2);
+    const PR = Math.min(devicePixelRatio, 1.75);
     renderer.setPixelRatio(PR);
     renderer.setSize(innerWidth, innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -429,20 +599,24 @@
     scene.fog = new THREE.Fog(0x070b14, 7.5, 17);
 
     const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.01, 100);
-    camera.position.set(4.1, -0.5, 2.3);
+    // spawn already in tour scene 1's pose (standard î-ĵ-k̂ view) so the opening
+    // showTour(0) flight is a no-op — no swing-and-roll on load
+    camera.position.set(4.9, 3.75, 3.2);
+    camera.up.set(0, 0, 1);
 
-    // TrackballControls: free tumbling with no pole limits — this scene has no natural
-    // "up" (the meaningful plane is tilted), and the camera presets re-orient the up vector.
+    // TrackballControls: free tumbling — the camera presets (keys 1–4) restore canonical
+    // orientations whenever the user wants to get their bearings back.
     const controls = new TrackballControls(camera, renderer.domElement);
     controls.rotateSpeed = 1.5;
     controls.zoomSpeed = 1.1;
     controls.panSpeed = 0.6;
     controls.dynamicDampingFactor = 0.12;
     controls.minDistance = 1.4;
-    controls.maxDistance = 12;
+    controls.maxDistance = 14;
+    controls.addEventListener('start', () => { camTween = null; }); // user always wins
 
     // post-processing: MSAA target (composer bypasses canvas AA) + bloom
-    const rt = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { samples: 4, type: THREE.HalfFloatType });
+    const rt = new THREE.WebGLRenderTarget(innerWidth, innerHeight, { samples: 2, type: THREE.HalfFloatType });
     const composer = new EffectComposer(renderer, rt);
     composer.setPixelRatio(PR);
     composer.setSize(innerWidth, innerHeight);
@@ -593,14 +767,17 @@
     const labB = makeLabel('b', '#40c7ff'); labB.position.copy(axB).multiplyScalar(AXL + 0.16); world.add(labB);
     const labC = makeLabel('c', '#ff7528'); labC.position.copy(axC).multiplyScalar(AXL + 0.16); world.add(labC);
 
-    world.add(axisLine(U0, AXL * 0.85, COL.zero, 0.5));
-    const lab0 = makeLabel('0', '#c792ea'); lab0.position.copy(U0).multiplyScalar(AXL * 0.85 + 0.15); world.add(lab0);
+    const zeroAxGrp = new THREE.Group(); world.add(zeroAxGrp);
+    zeroAxGrp.add(axisLine(U0, AXL * 0.85, COL.zero, 0.5));
+    const lab0 = makeLabel('0', '#c792ea'); lab0.position.copy(U0).multiplyScalar(AXL * 0.85 + 0.15); zeroAxGrp.add(lab0);
 
     const planeGrp = new THREE.Group(); world.add(planeGrp);
-    planeGrp.add(axisLine(UA, AXL * 0.85, COL.alpha, 0.25));
-    planeGrp.add(axisLine(UB, AXL * 0.85, COL.beta, 0.25));
-    const labAl = makeLabel('α', '#dce6ff'); labAl.position.copy(UA).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labAl);
-    const labBe = makeLabel('β', '#8fa3cc'); labBe.position.copy(UB).multiplyScalar(AXL * 0.85 + 0.14); planeGrp.add(labBe);
+    // α/β axes live in their own group so the tour can show the disc without them
+    const abGrp = new THREE.Group(); world.add(abGrp);
+    abGrp.add(axisLine(UA, AXL * 0.85, COL.alpha, 0.25));
+    abGrp.add(axisLine(UB, AXL * 0.85, COL.beta, 0.25));
+    const labAl = makeLabel('α', '#dce6ff'); labAl.position.copy(UA).multiplyScalar(AXL * 0.85 + 0.14); abGrp.add(labAl);
+    const labBe = makeLabel('β', '#8fa3cc'); labBe.position.copy(UB).multiplyScalar(AXL * 0.85 + 0.14); abGrp.add(labBe);
 
     // labels whose axis can point straight at the camera fade out there —
     // otherwise they hover over the origin as clutter (e.g. "0" in the top view)
@@ -723,7 +900,8 @@
       const geo = new THREE.BufferGeometry().setFromPoints(
         Array.from({ length: 33 }, () => new THREE.Vector3()));
       const l = new THREE.Line(geo, new THREE.LineBasicMaterial({
-        color: 0xff5964, transparent: true, opacity: 0.95 }));
+        color: 0xff5964, transparent: true, opacity: 0.95
+      }));
       l.visible = false;
       world.add(l);
       return l;
@@ -756,7 +934,8 @@
     })();
     function makeRing(color) {
       const r = new THREE.Line(ringGeo, new THREE.LineBasicMaterial({
-        color, transparent: true, opacity: 0.35 }));
+        color, transparent: true, opacity: 0.35
+      }));
       epiGrp.add(r);
       return r;
     }
@@ -999,14 +1178,21 @@
         u0: camera.up.clone(), u1: up.clone(), t: 0, dur,
       };
     }
-    controls.addEventListener('start', () => { camTween = null; }); // user always wins
-
+    const KUP = new THREE.Vector3(0, 0, 1); // k̂ — standard textbook up
     const VIEWS = {
-      hero: { pos: new THREE.Vector3(4.1, -0.5, 2.3), up: new THREE.Vector3(0, 1, 0) },
-      zero: { pos: U0.clone().multiplyScalar(4.6), up: UB.clone() },
+      // ~25° above the αβ disc, 0-axis as screen-vertical — identical framing to tour scene 8
+      hero: { pos: new THREE.Vector3(5.15, -2.73, 2.12), up: U0.clone() },
+      zero: { pos: U0.clone().multiplyScalar(5.7), up: UB.clone() },
       edge: { pos: UA.clone().multiplyScalar(4.9), up: U0.clone() },
+      ijk: { pos: new THREE.Vector3(4.9, 3.75, 3.2), up: KUP.clone() }, // classic î-ĵ-k̂ octant
     };
-    function camPreset(which) { const v = VIEWS[which] || VIEWS.hero; flyTo(v.pos, v.up); }
+    // mode-aware preset flight: in turntable mode the up vector stays k̂ (no rolling);
+    // none of the preset directions sit near the ±k̂ pole, so no singularity handling needed
+    function flyPreset(which, dur = 1.1) {
+      const v = VIEWS[which] || VIEWS.hero;
+      flyTo(v.pos, v.up, dur);
+    }
+    function camPreset(which) { flyPreset(which); }
 
     // Park engage/release: ease worldAngle toward −θF along the shortest arc
     let worldAngle = 0;
@@ -1061,31 +1247,45 @@
       {
         t: 'Three waveforms, one point',
         c: 'i<sub>a</sub>, i<sub>b</sub>, i<sub>c</sub> are three numbers at every instant — so they are <b>one point in 3-D</b>. The coloured chain adds a·x̂ + b·ŷ + c·ẑ tip-to-tail; the white ball is their sum. The scope shows the same data unrolled in time.',
-        apply() { tweenParams(RESET); Object.assign(params, { showConstruction: true, showEpicycles: false, park: false, frameSrc: 'ideal' }); camPreset('hero'); },
+        apply() {
+          tweenParams(RESET);
+          // scene 1 shows ONLY abc-space: no αβ plane, no 0-axis, no dq frame yet
+          Object.assign(params, {
+            showConstruction: true, showEpicycles: false, park: false, frameSrc: 'ideal',
+            showPlane: false, showZeroAxis: false, showAlphaBeta: false,
+            showDQ: false, showDrop: false, showLocus: false,
+          });
+          camPreset('ijk');
+        },
       },
       {
         t: 'A prison called a+b+c = 0',
         c: 'With no zero-sequence the three values always <b>sum to zero</b> — the point can never leave this tilted plane. Three signals, but only two dimensions of freedom. You are looking at the disc edge-on: the orbit is flat.',
-        apply() { tweenParams(RESET); Object.assign(params, { showConstruction: false }); camPreset('edge'); },
+        apply() {
+          tweenParams(RESET);
+          // the disc is the star here — no frame names yet
+          Object.assign(params, { showConstruction: true, showAlphaBeta: false, showDQ: false });
+          camPreset('edge');
+        },
       },
       {
         t: 'Why 120° apart? Watch the shadow',
         c: 'The a, b, c axes are perpendicular because they are just <b>three separate meter readings</b> — one per phase, nothing physical. Now watch the camera sink onto the 0-axis: three perpendicular axes cast shadows exactly <b>120° apart</b>. The space-vector diagram from machines class is <b>literally this shadow</b> — the stator winding layout performs it in hardware.',
         apply() {
           tweenParams(RESET);
-          Object.assign(params, { showConstruction: false, showEpicycles: false, park: false, showCage: true });
-          flyTo(VIEWS.zero.pos, VIEWS.zero.up, 3.6); // slow flight — the collapse IS the lesson
+          Object.assign(params, { showConstruction: true, showEpicycles: false, park: false, showCage: true, showDQ: false });
+          flyPreset('zero', 3.6); // slow flight — the collapse IS the lesson
         },
       },
       {
         t: 'Clarke is just a rename',
         c: 'Look straight down the 0-axis: the a, b, c axes land <b>120° apart</b> — the classic space-vector diagram. α and β are simply orthogonal coordinates for the disc. No information moved; the axes got renamed.',
-        apply() { tweenParams(RESET); Object.assign(params, { showDrop: true }); camPreset('zero'); },
+        apply() { tweenParams(RESET); Object.assign(params, { showDrop: true, showConstruction: true }); camPreset('zero'); },
       },
       {
         t: 'Park: ride the carousel',
         c: 'Now rotate <b>with</b> the vector. The world counter-rotates, the vector freezes, and the abc axes spin backwards. A frozen vector means constant d and q — AC became DC because <b>the observer moved</b>, not the signal.',
-        apply() { tweenParams(RESET); Object.assign(params, { park: true, frameSrc: 'ideal' }); camPreset('zero'); },
+        apply() { tweenParams(RESET); Object.assign(params, { park: true, frameSrc: 'ideal', showConstruction: true }); camPreset('zero'); },
       },
       {
         t: 'Unbalance = a counter-rotating circle',
@@ -1100,7 +1300,13 @@
       {
         t: 'Triplens escape through the floor',
         c: '3rd-harmonic components are <b>identical in all three phases</b> — pure zero-sequence. The orbit in the plane does not change at all; the ball just vibrates along the purple 0-axis. αβ and dq never see it — and a delta winding traps it.',
-        apply() { tweenParams({ ...RESET, A3: 0.35 }); Object.assign(params, { park: false, showEpicycles: true, showDrop: true }); camPreset('hero'); },
+        apply() {
+          tweenParams({ ...RESET, A3: 0.35 });
+          Object.assign(params, { park: false, showEpicycles: true, showDrop: true });
+          // hero position but with the 0-axis as "up": the purple axis stands vertical
+          // on screen while the turntable revolves around it
+          flyTo(VIEWS.hero.pos, U0);
+        },
       },
       {
         t: 'But who tells you θ?',
@@ -1116,6 +1322,7 @@
     ];
 
     let tourIdx = -1;
+    let autoRotAxis = 'up'; // 'up' = normal orbit around the view's up; 'zero' = turntable about the 0-axis
     const tourEl = {
       panel: document.getElementById('tour'), title: document.getElementById('tourTitle'),
       step: document.getElementById('tourStep'), cap: document.getElementById('tourCap'),
@@ -1133,6 +1340,13 @@
       tourEl.dots.innerHTML = TOUR.map((_, k) => k === i ? '<b>●</b>' : '●').join(' ');
       document.getElementById('tourPrev').disabled = i === 0;
       document.getElementById('tourNext').textContent = i === TOUR.length - 1 ? 'finish ✓' : 'next ▶';
+      // visibility baseline — scenes override only what they hide
+      Object.assign(params, {
+        showPlane: true, showZeroAxis: true, showAlphaBeta: true, showDQ: true, showDrop: true, showLocus: true,
+        showConstruction: false, showEpicycles: false,
+        autoRotate: i === 0 || i === 1 || i === 7, // scenes 1, 2 and 8 slowly orbit
+      });
+      autoRotAxis = i === 7 ? 'zero' : 'up'; // scene 8: turntable about the 0-axis
       ch.apply();
       guiRefresh();
       syncTransport();
@@ -1142,7 +1356,12 @@
       tourIdx = -1;
       tourEl.panel.style.display = 'none';
       document.getElementById('chips').style.display = 'flex';
-      Object.assign(params, { frameSrc: 'ideal', showEpicycles: false, showConstruction: false });
+      Object.assign(params, {
+        frameSrc: 'ideal', showEpicycles: false, showConstruction: false,
+        showPlane: true, showZeroAxis: true, showAlphaBeta: true, showDQ: true, showDrop: true, showLocus: true,
+        autoRotate: false,
+      });
+      autoRotAxis = 'up';
       guiRefresh();
     }
 
@@ -1180,10 +1399,31 @@
       params.paused = !params.paused;
       btnPlay.textContent = params.paused ? '▶ play' : '⏸ pause';
     };
-    btnPark.onclick = () => { params.park = !params.park; guiRefresh(); syncTransport(); };
+    btnPark.onclick = () => {
+      params.park = !params.park;
+      if (params.park) params.autoRotate = false; // two rotations at once is disorienting
+      guiRefresh(); syncTransport();
+    };
     R('btnJump').onclick = evtJump;
     R('btnSag').onclick = evtSag;
     function syncTransport() { btnPark.classList.toggle('on', params.park); }
+
+    // θ scrub slider: dragging pauses playback and steps the whole simulation to that angle
+    const thSlide = R('thSlide');
+    let thSliding = false;
+    thSlide.addEventListener('pointerdown', () => {
+      thSliding = true;
+      if (!params.paused) btnPlay.onclick();
+    });
+    addEventListener('pointerup', () => { thSliding = false; });
+    thSlide.addEventListener('input', () => {
+      const om = 2 * Math.PI * params.speed;
+      const cur = ((((th + ph1) * 180 / Math.PI) % 360) + 360) % 360;
+      let delta = parseFloat(thSlide.value) - cur;
+      delta = ((delta + 540) % 360) - 180; // shortest way around the circle
+      advance((delta * Math.PI / 180) / om);
+      forceSample = true;
+    });
 
     // ============================================================ GUI
     const gui = new GUI({ title: 'Clarke / Park — controls' });
@@ -1195,10 +1435,11 @@
     fs.add(params, 'A3', 0, 0.6, 0.01).name('3rd — triplen → 0-axis');
     fs.add(params, 'A5', 0, 0.6, 0.01).name('5th (neg) → 6ω in dq');
     fs.add(params, 'A7', 0, 0.6, 0.01).name('7th (pos) → 6ω in dq');
-    fs.add(params, 'speed', 0.03, 1.0, 0.01).name('speed (cycles/s)');
+    fs.add(params, 'speed', 0.03, 0.2, 0.01).name('speed (cycles/s)');
 
     const ff = gui.addFolder('dq frame');
-    ff.add(params, 'park').name('Park view — ride the frame').onChange(syncTransport).listen();
+    ff.add(params, 'park').name('Park view — ride the frame')
+      .onChange(v => { if (v) params.autoRotate = false; syncTransport(); }).listen();
     const srcCtrl = ff.add(params, 'frameSrc', {
       'locked ω (open-loop)': 'ideal', 'detuned ω (drifts!)': 'detuned', 'SRF-PLL estimate': 'pll',
     }).name('frame angle source');
@@ -1226,9 +1467,11 @@
     fd.add(params, 'showOrbit').name('orbit preview (dashed)');
     fd.add(params, 'showLocus').name('dq-frame locus (green)').listen();
     fd.add(params, 'showTrail').name('abc comet trail');
-    fd.add(params, 'showPlane').name('αβ plane');
+    fd.add(params, 'showPlane').name('αβ plane').listen();
+    fd.add(params, 'showZeroAxis').name('0-axis').listen();
+    fd.add(params, 'showAlphaBeta').name('α β axes').listen();
     fd.add(params, 'showCage').name('reference cage & ticks');
-    fd.add(params, 'showDQ').name('dq axes');
+    fd.add(params, 'showDQ').name('dq axes').listen();
     fd.add(params, 'showDrop').name('projection & drop line').listen();
     fd.add(params, 'showMatrix').name('matrix panel (live algebra)')
       .onChange(v => { document.getElementById('matrix').style.display = v ? 'block' : 'none'; });
@@ -1240,6 +1483,8 @@
     fv.add({ p: () => camPreset('hero') }, 'p').name('▶ hero view  (1)');
     fv.add({ p: () => camPreset('zero') }, 'p').name('▶ look down 0-axis  (2)');
     fv.add({ p: () => camPreset('edge') }, 'p').name('▶ plane edge-on  (3)');
+    fv.add({ p: () => camPreset('ijk') }, 'p').name('▶ standard î-ĵ-k̂  (4)');
+    fv.add(params, 'autoRotate').name('auto-rotate view').listen();
 
     function guiRefresh() { gui.controllersRecursive().forEach(c => c.updateDisplay()); syncFrameCtrls(); }
 
@@ -1254,6 +1499,7 @@
         case '1': camPreset('hero'); break;
         case '2': camPreset('zero'); break;
         case '3': camPreset('edge'); break;
+        case '4': camPreset('ijk'); break;
         case 'ArrowRight':
           if (tourIdx >= 0) document.getElementById('tourNext').onclick();
           else if (params.paused) stepTheta(Math.PI / 90);
@@ -1299,7 +1545,7 @@
     const dDir = new THREE.Vector3(), qDir = new THREE.Vector3();
     const vView = new THREE.Vector3(), vAxis = new THREE.Vector3();
     let lastNow = performance.now();
-    let orbitCheck = 0;
+    let orbitCheck = 0, guiTick = 0, scopeTick = 0;
 
     function tick(now) {
       requestAnimationFrame(tick);
@@ -1318,7 +1564,7 @@
           params[t.key] = t.t >= 1 ? t.to : t.from + (t.to - t.from) * smoothstep(t.t);
           if (t.t >= 1) tweens.splice(i, 1);
         }
-        guiRefresh();
+        if (!(guiTick++ % 3)) guiRefresh(); // DOM refresh is the pricey part — throttle it
       }
       if (camTween) {
         const t = camTween;
@@ -1327,6 +1573,16 @@
         camera.position.lerpVectors(t.p0, t.p1, s);
         camera.up.lerpVectors(t.u0, t.u1, s).normalize();
         if (t.t >= 1) camTween = null;
+      } else if (params.autoRotate) {
+        const ang = dt * 0.12;
+        if (autoRotAxis === 'zero') {
+          // rigid turntable about the 0-axis (scene 8)
+          camera.position.sub(controls.target).applyAxisAngle(U0, ang).add(controls.target);
+          camera.up.applyAxisAngle(U0, ang);
+        } else {
+          // normal orbit around the current view's up axis
+          camera.position.sub(controls.target).applyAxisAngle(camera.up, ang).add(controls.target);
+        }
       }
 
       // -------- signal sample
@@ -1379,6 +1635,8 @@
 
       planeGrp.visible = params.showPlane;
       cageGrp.visible = params.showCage;
+      zeroAxGrp.visible = params.showZeroAxis;
+      abGrp.visible = params.showAlphaBeta;
 
       // -------- tip-to-tail construction
       consGrp.visible = params.showConstruction;
@@ -1467,7 +1725,8 @@
       rdTheta.textContent = 'θ = ' + (((ths * 180 / Math.PI) % 360 + 360) % 360).toFixed(0) + '°';
       updateRipple();
       updateMatrix(a, b, c, t);
-      drawScope(ths);
+      if (!(scopeTick++ % 2)) drawScope(ths); // 30 Hz is plenty for the strip
+      if (!thSliding) thSlide.value = (((ths * 180 / Math.PI) % 360) + 360) % 360;
 
       // fade axis labels whose axis points at the camera (world rotation included)
       vView.copy(camera.position).sub(controls.target).normalize();
@@ -1491,11 +1750,12 @@
       composer.setSize(innerWidth, innerHeight);
       bloomPass.setSize(innerWidth, innerHeight);
       for (const m of fatMats) m.resolution.set(innerWidth, innerHeight);
-      controls.handleResize();
+      controls.handleResize?.(); // TrackballControls only
       sizeScope();
     });
 
     rebuildOrbit();
+    showTour(0); // the app opens inside the guided tour
     requestAnimationFrame(t => { lastNow = t; tick(t); });
 
     // ============================================================ test handle

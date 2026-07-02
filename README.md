@@ -51,7 +51,12 @@ to inspect values and see a ghost ball at that instant on the 3-D orbit.
 
 **Scenario chips**: Balanced · Unbalanced sag · Rectifier harmonics · Triplen 3rd · Everything.
 
-**Keyboard**: Space play/pause · P Park · E epicycles · C construction · 1/2/3 camera views ·
+**Camera**: free tumble (TrackballControls) with four presets — hero, down 0-axis, plane
+edge-on, standard î-ĵ-k̂ (keys 1–4) — plus an *auto-rotate view* checkbox (auto-enabled in
+tour scenes 1, 2 and 8). The app opens inside the guided tour, and the transport bar has a
+**θ slider** to scrub the whole simulation to any electrical angle (pauses playback).
+
+**Keyboard**: Space play/pause · P Park · E epicycles · C construction · 1/2/3/4 camera views ·
 ←/→ step θ ±2° while paused (or navigate the tour) · Esc exit tour.
 
 ## Conventions & geometry notes
