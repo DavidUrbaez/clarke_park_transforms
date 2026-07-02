@@ -161,9 +161,11 @@
     }
 
     /* ------------- scope ------------- */
+    /* base position is a placeholder — layoutScope() docks it under the HUD on desktop
+       once the HUD's real height is known, and the phone media query below overrides it */
     #scope {
-      bottom: 14px;
-      right: 14px;
+      top: 200px;
+      left: 14px;
       padding: 9px 12px 7px;
     }
 
@@ -1946,6 +1948,27 @@
     }
     layoutTour();
 
+    // Desktop: dock the waveform scope directly under the HUD (a short, reliably-sized
+    // top-left panel) instead of a fixed bottom-right corner — that corner now collides
+    // with the tour box and the wider transport bar at common laptop widths, and the
+    // top-right corner is unreliable since the lil-gui panel's height varies with which
+    // folders are open. On phones the body.show-scope media-query rule takes over instead.
+    const hudPanel = document.getElementById('hud');
+    const scopePanel = document.getElementById('scope');
+    function layoutScope() {
+      if (matchMedia(PHONE_MQ).matches) {
+        scopePanel.style.top = ''; scopePanel.style.left = '';
+        scopePanel.style.right = ''; scopePanel.style.bottom = '';
+        return;
+      }
+      scopePanel.style.top = Math.round(hudPanel.getBoundingClientRect().bottom + 10) + 'px';
+      scopePanel.style.left = '14px';
+      scopePanel.style.right = 'auto';
+      scopePanel.style.bottom = 'auto';
+    }
+    layoutScope();
+    new ResizeObserver(layoutScope).observe(hudPanel);
+
     addEventListener('resize', () => {
       camera.aspect = innerWidth / innerHeight;
       camera.fov = fovFor();
@@ -1957,6 +1980,7 @@
       controls.handleResize?.(); // TrackballControls only
       sizeScope();
       layoutTour();
+      layoutScope();
     });
 
     rebuildOrbit();
