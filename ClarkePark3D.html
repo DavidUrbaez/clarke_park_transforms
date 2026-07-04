@@ -386,31 +386,51 @@
       text-align: right;
     }
 
-    /* lil-gui theming */
+    /* lil-gui theming + placement (docked below the ⚙ Controls pill) */
     .lil-gui.root {
       --background-color: rgba(14, 20, 38, .88);
       --widget-color: #16203a;
       --title-background-color: #101a33;
+      top: 52px !important;
+      right: 12px !important;
     }
 
-    /* ------------- controls toggle (mobile only) ------------- */
+    /* controls hidden by default at every size; the ⚙ Controls pill reveals them */
+    body.controls-off .lil-gui.root {
+      display: none;
+    }
+
+    /* ------------- overlay toggles ------------- */
+    /* the ⚙ Controls pill shows at every size; the 〜 signals toggle is phone-only */
     #uiToggle,
     #sigToggle {
       position: fixed;
       top: 12px;
       z-index: 30;
-      display: none;
-      font-size: 16px;
       line-height: 1;
-      padding: 8px 11px;
     }
 
     #uiToggle {
       right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+    }
+
+    #uiToggle.on {
+      border-color: var(--accent);
+      background: #1d2d55;
+      color: #fff;
     }
 
     #sigToggle {
       right: 58px;
+      display: none;
+      font-size: 16px;
+      padding: 8px 11px;
     }
 
     @media (max-width: 1120px) {
@@ -434,15 +454,22 @@
     @media (max-width: 640px),
     (pointer: coarse) and (max-width: 900px) {
 
-      #uiToggle,
       #sigToggle {
         display: block;
       }
 
+      /* icon-only pill on phones to save the narrow top bar */
+      #uiToggle .lbl {
+        display: none;
+      }
+
+      #uiToggle {
+        padding: 8px 11px;
+        font-size: 16px;
+      }
+
       /* lil-gui sits below the toggle button and scrolls if tall */
       .lil-gui.root {
-        top: 52px !important;
-        right: 10px !important;
         max-height: calc(100vh - 120px);
         overflow-y: auto;
       }
@@ -450,11 +477,6 @@
       /* the HUD (title + "start the guided tour") is hidden on phones to save space —
          the app opens in the tour anyway, so a page refresh restarts it */
       #hud {
-        display: none;
-      }
-
-      /* the lil-gui control panel is hidden by default; the ⚙ toggle reveals it */
-      body.controls-off .lil-gui.root {
         display: none;
       }
 
@@ -524,9 +546,9 @@
 <body>
   <div id="app"></div>
 
-  <!-- mobile toggles -->
+  <!-- overlay toggles -->
   <button id="sigToggle" class="panel" title="show / hide the time-domain signals">〜</button>
-  <button id="uiToggle" class="panel" title="show / hide controls">⚙</button>
+  <button id="uiToggle" class="panel" title="show / hide controls">⚙ <span class="lbl">Controls</span></button>
 
   <!-- ================= HUD ================= -->
   <div id="hud" class="panel">
@@ -1158,7 +1180,8 @@
     // ============================================================ scope (HiDPI)
     const scopeCv = document.getElementById('scopeCv');
     const sg = scopeCv.getContext('2d');
-    const SW = 380, SH = 150;
+    let SW = 380;
+    const SH = 150;
     const SPAN = 6 * Math.PI; // 3 electrical cycles across the strip
 
     function sizeScope() {
@@ -1512,6 +1535,7 @@
       ch.apply();
       guiRefresh();
       syncTransport();
+      layoutTour(); // re-clamp now that the panel is visible with this scene's content
     }
 
     function exitTour() {
@@ -1540,12 +1564,16 @@
     // On phones the app opens with the lil-gui panel hidden for a clean 3D view (the ⚙
     // button reveals it), but the time-domain waveforms are shown from the start.
     const isPhone = matchMedia(PHONE_MQ).matches;
+    // start with the controls panel hidden for a clean 3-D view on every screen size
+    document.body.classList.add('controls-off');
     if (isPhone) {
-      document.body.classList.add('controls-off', 'show-scope');
+      document.body.classList.add('show-scope');
       document.getElementById('sigToggle').classList.add('on');
     }
     document.getElementById('uiToggle').addEventListener('click', () => {
-      document.body.classList.toggle('controls-off');
+      const shown = !document.body.classList.toggle('controls-off');
+      document.getElementById('uiToggle').classList.toggle('on', shown);
+      layoutTour(); // opening / closing the panel changes the space beside the tour
     });
     document.getElementById('sigToggle').addEventListener('click', () => {
       const on = document.body.classList.toggle('show-scope');
@@ -1657,7 +1685,7 @@
     fd.add(params, 'showDQ').name('dq axes').listen();
     fd.add(params, 'showDrop').name('projection & drop line').listen();
     fd.add(params, 'showMatrix').name('matrix panel (live algebra)')
-      .onChange(v => { document.getElementById('matrix').style.display = v ? 'block' : 'none'; });
+      .onChange(v => { document.getElementById('matrix').style.display = v ? 'block' : 'none'; layoutTour(); });
     fd.add(params, 'bloom').name('bloom').onChange(v => { bloomPass.enabled = v; });
     fd.add(params, 'glow', 0, 1.2, 0.02).name('glow strength').onChange(v => { bloomPass.strength = v; });
     fd.close();
@@ -1945,6 +1973,35 @@
       const style = getComputedStyle(transportPanel);
       const gap = parseFloat(style.bottom) + transportPanel.offsetHeight + 12;
       tourPanel.style.bottom = gap + 'px';
+
+      // phones use the full-width CSS layout; nothing to clamp
+      if (matchMedia(PHONE_MQ).matches) { tourPanel.style.width = ''; return; }
+      if (getComputedStyle(tourPanel).display === 'none') return;
+
+      // Clamp the centred tour so it never covers a side menu: measure every panel
+      // that shares the tour's vertical band and shrink to the free centre gap.
+      tourPanel.style.width = '';                 // reset to the CSS default first
+      const cx = innerWidth / 2;
+      const band = tourPanel.getBoundingClientRect();
+      let leftLim = 14, rightLim = innerWidth - 14;
+      for (const el of [
+        document.getElementById('matrix'),
+        document.querySelector('.lil-gui.root'),
+        document.getElementById('uiToggle'),
+        document.getElementById('hud'),
+        document.getElementById('scope'),
+      ]) {
+        if (!el) continue;
+        const cs = getComputedStyle(el);
+        if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+        const r = el.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        if (r.bottom <= band.top || r.top >= band.bottom) continue; // no vertical overlap
+        if (r.right <= cx) leftLim = Math.max(leftLim, r.right + 10);
+        else if (r.left >= cx) rightLim = Math.min(rightLim, r.left - 10);
+      }
+      const half = Math.min(cx - leftLim, rightLim - cx);
+      tourPanel.style.width = Math.max(280, Math.min(560, innerWidth - 28, half * 2)) + 'px';
     }
     layoutTour();
 
@@ -1965,6 +2022,11 @@
       scopePanel.style.left = '14px';
       scopePanel.style.right = 'auto';
       scopePanel.style.bottom = 'auto';
+      const hudWidth = Math.round(hudPanel.getBoundingClientRect().width);
+      scopePanel.style.width = hudWidth + 'px';
+      const cs = getComputedStyle(scopePanel);
+      const newSW = Math.round(hudWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
+      if (newSW !== SW) { SW = newSW; sizeScope(); }
     }
     layoutScope();
     new ResizeObserver(layoutScope).observe(hudPanel);
